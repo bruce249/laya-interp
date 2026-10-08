@@ -319,6 +319,40 @@ def build(costs: dict | None = None) -> str:
     if parts:
         sections.append(("Follow-ups: fp32, held-out, greedy sets, steering, LLM data", "".join(parts)))
 
+    arms = {m: _load(f"retrain/{m}")[0] for m in ("ctrl_soft_ce", "ctrl_rlcd")}
+    arms = {m: v for m, v in arms.items() if v}
+    if arms:
+        rows = []
+        for m, d in arms.items():
+            rows.append({"model": m, "accuracy": d["baseline"]["accuracy"], "reversal flips": d["baseline"]["reversal_flip_rate"],
+                         "flips, shared positions": d["parallel"]["shipped_parallel_positions"]["reversal_flip_rate"],
+                         "flips, options blocked": d["parallel"]["options_blocked_seqpos"]["reversal_flip_rate"],
+                         "ECE raw": d["baseline"]["ece_raw"], "|M| centered": d["interaction"]["mean_abs_M_centered"],
+                         "greedy-B MLPs": d["greedy_B_mlps"]["layers"],
+                         "label-following yes/no": d["label_following"]["semantic_yn/slots_default"]["label_following_rate"]})
+        sections.append(("Stretch · same init, same data: soft-CE vs RLCD",
+                         _table(rows, list(rows[0].keys()))))
+    js, _ = _load("sae/summary")
+    if js:
+        rows = []
+        for key in [k for k in js if k.startswith("L")]:
+            v = js[key]
+            for abl in ("ablate_conf10", "ablate_choice10", "ablate_random10"):
+                rows.append({"layer": key, "ablation": abl, **v[abl]})
+        meta = "; ".join(f"{k}: FVE {js[k]['stats']['val_fve']:.3f}, recon keeps {js[k]['stats']['downstream_argmax_kept']:.3f} "
+                         f"of answers, top-25 choice∩confidence overlap {js[k]['overlap_top25']}"
+                         for k in js if k.startswith("L"))
+        labels = ""
+        for k in [k for k in js if k.startswith("L")]:
+            lab = js[k].get("labels") or {}
+            if lab:
+                labels += f"<h3>{k} feature labels (gpt-5.6-luna)</h3>" + _table(
+                    [{"latent": j, "label": t, "choice top": int(j) in js[k]["top_choice"],
+                      "confidence top": int(j) in js[k]["top_confidence"]} for j, t in lab.items()],
+                    ["latent", "label", "choice top", "confidence top"])
+        sections.append(("SAE · [MASK] features", f"<p>{html.escape(meta)}</p>" +
+                         _table(rows, ["layer", "ablation", "abs_log_scale", "log_scale", "rotation_deg", "argmax_kept"]) + labels))
+
     if costs:
         sections.append(("Costs", "<pre>" + html.escape(json.dumps(costs, indent=2)) + "</pre>"))
 
