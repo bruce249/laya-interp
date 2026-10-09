@@ -175,6 +175,14 @@ Read in full and summarize the exact claims and setups of:
 
 Then search specifically for encoder / cross-encoder label-shortcut and option-interaction mechanisms. Record what was searched, so the novelty claims state their own limits.
 
+**Outcome, 2026-10-09.** Notes and the search log are in `LITERATURE_NOTES.md`.
+
+- **Set-Based Prompting contrast** confirmed from the paper itself: the mask mattered more than positions, but in decoders and on only 20 MMLU questions. Reworded accordingly.
+- **Entropy neurons** are explicitly not a temperature; laya's MLPs are. This is now framed as a contrast.
+- **Model card** confirms the noul label warning.
+- **Cross-seed variation** of circuits is known (Toy Model of Universality); we claim only its consequence for fixes.
+- **Wen et al.** was read at abstract level only; read it in full before submission.
+
 ### Phase 7 · Reproducible release (~0.5 day)
 
 - **Environment:** laya 0.4.1, transformers 5.19.0, torch 2.14.1, nnsight 0.7.0; pinned model revisions from `laya.PINNED_REVISIONS`.
