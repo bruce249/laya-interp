@@ -1,0 +1,280 @@
+{
+  "model": "multilingual",
+  "precision": "fp32",
+  "mlp_layers": [
+    22,
+    21,
+    20,
+    23
+  ],
+  "explore_main": {
+    "base": {
+      "accuracy": 0.3541666666666667,
+      "ece": 0.27424342657343065,
+      "brier": 0.8618881869066265,
+      "nll": 1.8213616609573364,
+      "auroc_margin": 0.5819560611632939,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 2.606989594107859e-07
+    },
+    "a_ablate": {
+      "accuracy": 0.35272988505747127,
+      "ece": 0.11736775732374395,
+      "brier": 0.7652891427059939,
+      "nll": 1.4586923122406006,
+      "auroc_margin": 0.5922385401149661,
+      "argmax_kept": 0.9568965517241379,
+      "kendall_tau": 0.9441571235656738,
+      "rotation_deg": 5.439301630731197
+    },
+    "b_rescale_per_item": {
+      "accuracy": 0.3541666666666667,
+      "ece": 0.11883898156063365,
+      "brier": 0.7653155431805765,
+      "nll": 1.4587528967937329,
+      "auroc_margin": 0.5840927602677756,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 2.1692244987894838e-07
+    },
+    "b_global_temperature": {
+      "accuracy": 0.3541666666666667,
+      "ece": 0.11883500595202393,
+      "brier": 0.7653248630011468,
+      "nll": 1.4587626457214355,
+      "auroc_margin": 0.5819560611632939,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 1.3943236617267387e-06
+    },
+    "best_global_temperature": {
+      "accuracy": 0.3541666666666667,
+      "ece": 0.03678934145504715,
+      "brier": 0.7325983955416021,
+      "nll": 1.3916587829589844,
+      "auroc_margin": 0.5819560611632939,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 1.4749033972946129e-06
+    },
+    "c1_ablate_at_mask_only": {
+      "accuracy": 0.35344827586206895,
+      "ece": 0.11821066689859516,
+      "brier": 0.7653598069419125,
+      "nll": 1.4588472843170166,
+      "auroc_margin": 0.5922628726287262,
+      "argmax_kept": 0.9547413793103449,
+      "kendall_tau": 0.9474138021469116,
+      "rotation_deg": 5.352156580731592
+    },
+    "c2_ablate_except_mask": {
+      "accuracy": 0.3505747126436782,
+      "ece": 0.2787048009534677,
+      "brier": 0.8625636133494441,
+      "nll": 1.8221193552017212,
+      "auroc_margin": 0.5892640178441897,
+      "argmax_kept": 0.9942528735632183,
+      "kendall_tau": 0.9929118752479553,
+      "rotation_deg": 0.9139390184744021
+    },
+    "scale_ratio": {
+      "mean": 0.006772278001424976,
+      "sd": 0.0008229356498408127,
+      "cv": 0.12151533792139901,
+      "corr_with_correct": 0.016922762813451314,
+      "corr_with_base_margin": -0.07561509158346363,
+      "mean_correct": 0.0067910838757815496,
+      "mean_incorrect": 0.006761965102584275,
+      "by_source": {
+        "ARC-Challenge": 0.0066514931659314965,
+        "ARC-Easy": 0.006844186474828032,
+        "CSQA": 0.006737372915208441,
+        "QASC": 0.006901249813547566
+      },
+      "global_T_matching_a": 148.7931604229984,
+      "best_global_T": 4.048572804897981
+    }
+  },
+  "explore_heldout": {
+    "base": {
+      "accuracy": 0.37018425460636517,
+      "ece": 0.2662851846897023,
+      "brier": 0.8630956919459833,
+      "nll": 1.797711730003357,
+      "auroc_margin": 0.5598825454895543,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 2.826377236024222e-07
+    },
+    "a_ablate": {
+      "accuracy": 0.36683417085427134,
+      "ece": 0.13139525659918982,
+      "brier": 0.7656881598554027,
+      "nll": 1.4603673219680786,
+      "auroc_margin": 0.5645792563600782,
+      "argmax_kept": 0.9514237855946399,
+      "kendall_tau": 0.9506421089172363,
+      "rotation_deg": 5.175751757484472
+    },
+    "b_rescale_per_item": {
+      "accuracy": 0.37018425460636517,
+      "ece": 0.134773107011989,
+      "brier": 0.7656989258537565,
+      "nll": 1.4603943448623615,
+      "auroc_margin": 0.559328968903437,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 1.9716193380066927e-07
+    },
+    "b_global_temperature": {
+      "accuracy": 0.37018425460636517,
+      "ece": 0.1347581687534674,
+      "brier": 0.7656549121081636,
+      "nll": 1.4602935314178467,
+      "auroc_margin": 0.5598825454895543,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 1.4222987618083707e-06
+    },
+    "best_global_temperature": {
+      "accuracy": 0.37018425460636517,
+      "ece": 0.03584553740631595,
+      "brier": 0.7306585116725568,
+      "nll": 1.3844513893127441,
+      "auroc_margin": 0.5598825454895543,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 1.3142010167507174e-06
+    },
+    "c1_ablate_at_mask_only": {
+      "accuracy": 0.36683417085427134,
+      "ece": 0.1315248178776784,
+      "brier": 0.765770012263656,
+      "nll": 1.460548996925354,
+      "auroc_margin": 0.5657932883960282,
+      "argmax_kept": 0.9564489112227805,
+      "kendall_tau": 0.9517588019371033,
+      "rotation_deg": 5.174193269256235
+    },
+    "c2_ablate_except_mask": {
+      "accuracy": 0.37018425460636517,
+      "ece": 0.267051194430995,
+      "brier": 0.8636701502471634,
+      "nll": 1.7972049713134766,
+      "auroc_margin": 0.5591484547992682,
+      "argmax_kept": 0.9882747068676717,
+      "kendall_tau": 0.9909547567367554,
+      "rotation_deg": 0.7802474270382234
+    },
+    "scale_ratio": {
+      "mean": 0.006832088665923485,
+      "sd": 0.0007456055683012281,
+      "cv": 0.1091328881634831,
+      "corr_with_correct": -0.047496292194600796,
+      "corr_with_base_margin": -0.12349667071152555,
+      "mean_correct": 0.006785896679803034,
+      "mean_incorrect": 0.006859238742871943,
+      "by_source": {
+        "ARC-Challenge": 0.00676888321358688,
+        "ARC-Easy": 0.006803159943558082,
+        "CSQA": 0.006808698766246809,
+        "QASC": 0.0069392147692272105
+      },
+      "global_T_matching_a": 147.25378208193484,
+      "best_global_T": 3.826848775781554
+    }
+  },
+  "confirm": {
+    "base": {
+      "accuracy": 0.291,
+      "ece": 0.29670642599463465,
+      "brier": 0.9147516029335645,
+      "nll": 1.8357771635055542,
+      "auroc_margin": 0.5167386425874495,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 2.538114444227755e-07
+    },
+    "a_ablate": {
+      "accuracy": 0.295,
+      "ece": 0.04259776595234871,
+      "brier": 0.7494404913456058,
+      "nll": 1.3851770162582397,
+      "auroc_margin": 0.520012020675562,
+      "argmax_kept": 0.946,
+      "kendall_tau": 0.9323333501815796,
+      "rotation_deg": 5.7204556275897005
+    },
+    "b_rescale_per_item": {
+      "accuracy": 0.291,
+      "ece": 0.0386147674352712,
+      "brier": 0.749458185647409,
+      "nll": 1.385211971888455,
+      "auroc_margin": 0.5236066479577741,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 2.026581436116962e-07
+    },
+    "b_global_temperature": {
+      "accuracy": 0.291,
+      "ece": 0.03861670732498168,
+      "brier": 0.7494808080960104,
+      "nll": 1.3852571249008179,
+      "auroc_margin": 0.5167386425874495,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 1.513253000369704e-06
+    },
+    "best_global_temperature": {
+      "accuracy": 0.291,
+      "ece": 0.017053374707698837,
+      "brier": 0.7457270664593707,
+      "nll": 1.3775444030761719,
+      "auroc_margin": 0.5167386425874495,
+      "argmax_kept": 1.0,
+      "kendall_tau": 1.0,
+      "rotation_deg": 1.5256572920186234e-06
+    },
+    "c1_ablate_at_mask_only": {
+      "accuracy": 0.295,
+      "ece": 0.042704911798238765,
+      "brier": 0.749461349479072,
+      "nll": 1.385218620300293,
+      "auroc_margin": 0.5216540449573267,
+      "argmax_kept": 0.947,
+      "kendall_tau": 0.9319999814033508,
+      "rotation_deg": 5.727636358299148
+    },
+    "c2_ablate_except_mask": {
+      "accuracy": 0.291,
+      "ece": 0.29770979335904113,
+      "brier": 0.9153638053541749,
+      "nll": 1.8367195129394531,
+      "auroc_margin": 0.516947057711602,
+      "argmax_kept": 0.989,
+      "kendall_tau": 0.9890000224113464,
+      "rotation_deg": 1.0403234990559835
+    },
+    "scale_ratio": {
+      "mean": 0.0068143582725552505,
+      "sd": 0.0009676453440386005,
+      "cv": 0.14200094936830385,
+      "corr_with_correct": 0.05658861736118696,
+      "corr_with_base_margin": -0.060860690979811914,
+      "mean_correct": 0.006899829888964603,
+      "mean_incorrect": 0.006779277538598803,
+      "by_source": {
+        "MMLU-conceptual_physics": 0.007136665652628268,
+        "MMLU-high_school_biology": 0.006858948991510814,
+        "MMLU-high_school_geography": 0.006982725387805141,
+        "MMLU-high_school_psychology": 0.00686406442822287,
+        "MMLU-high_school_world_history": 0.006221263593440163,
+        "MMLU-nutrition": 0.007034521011623562,
+        "OpenBookQA": 0.006776192465557701
+      },
+      "global_T_matching_a": 148.26078399744534,
+      "best_global_T": 9.128929860522911
+    }
+  }
+}

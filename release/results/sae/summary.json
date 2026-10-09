@@ -1,0 +1,2465 @@
+{
+  "layers": [
+    21,
+    28
+  ],
+  "n_vectors": 201414,
+  "L21": {
+    "stats": {
+      "val_fve": 0.999563992023468,
+      "alive_frac": 0.9962158203125,
+      "n_train": 191344,
+      "m": 16384,
+      "k": 32,
+      "downstream_argmax_kept": 0.9530988274706867,
+      "downstream_abs_log_scale": 0.06357776266422323
+    },
+    "top_choice": [
+      887,
+      9431,
+      14694,
+      6755,
+      5061,
+      15601,
+      11884,
+      4333,
+      2328,
+      12626,
+      7590,
+      780,
+      14320,
+      9336,
+      5634,
+      4253,
+      10345,
+      13142,
+      16006,
+      7978,
+      6820,
+      998,
+      3568,
+      8517,
+      12088
+    ],
+    "top_confidence": [
+      887,
+      14694,
+      5061,
+      12626,
+      9831,
+      10345,
+      6755,
+      7511,
+      3568,
+      8823,
+      9431,
+      998,
+      3618,
+      5145,
+      15067,
+      6233,
+      11884,
+      6820,
+      4385,
+      10026,
+      13299,
+      13994,
+      6715,
+      12128,
+      8875
+    ],
+    "overlap_top25": 11,
+    "corr_choice_vs_conf_scores": 0.5755341849219794,
+    "top_choice_scores": [
+      0.750613077997875,
+      0.7289014137933545,
+      0.521312844397223,
+      0.45125496983567903,
+      0.3748283104341623,
+      0.35990540374343216,
+      0.3165121028425051,
+      0.2945469684675506,
+      0.27898611586155697,
+      0.2740905533642859,
+      0.23960025670601248,
+      0.22514961994411076,
+      0.2218460364300583,
+      0.21544906086716065,
+      0.2041731593942393,
+      0.20231469719242567,
+      0.16801354556304304,
+      0.1644062415401628,
+      0.16026322863754783,
+      0.15993179752426978,
+      0.15636973234168283,
+      0.14652369445616897,
+      0.1423334056209702,
+      0.13967848909135905,
+      0.13779623873841107
+    ],
+    "top_conf_scores": [
+      0.6656168239628413,
+      0.5621963877469055,
+      0.4182912822099056,
+      0.41728827848992067,
+      0.3948768610671295,
+      0.36964080573940683,
+      0.3694410985745595,
+      0.36360881941417195,
+      0.3468916585960812,
+      0.3346959349777253,
+      0.31965461308284543,
+      0.2961094489607984,
+      0.285769309619268,
+      0.284986061708118,
+      0.2777933436964502,
+      0.27502378702823144,
+      0.27463958067860306,
+      0.27443105713509125,
+      0.26903571473656107,
+      0.25586922067953505,
+      0.2496281935327502,
+      0.2475001662592168,
+      0.24437355659519888,
+      0.24261884485141375,
+      0.24229390092805483
+    ],
+    "ablate_conf10": {
+      "abs_log_scale": 0.27552243884272976,
+      "log_scale": -0.2729521015896982,
+      "rotation_deg": 6.371471130705327,
+      "argmax_kept": 0.9530988274706867
+    },
+    "ablate_choice10": {
+      "abs_log_scale": 0.38961167986377526,
+      "log_scale": -0.3878546816724005,
+      "rotation_deg": 7.331145147461396,
+      "argmax_kept": 0.9229480737018425
+    },
+    "ablate_random10": {
+      "abs_log_scale": 0.0010543583462871507,
+      "log_scale": -0.0005280227201632653,
+      "rotation_deg": 0.08492439641509934,
+      "argmax_kept": 1.0
+    },
+    "examples": {
+      "780": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "mooing",
+          "is_argmax": 0,
+          "log_norm": 0.97
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "marble, a metamorphic rock",
+          "is_argmax": 0,
+          "log_norm": 1.68
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "mooing",
+          "is_argmax": 0,
+          "log_norm": 1.27
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Protista",
+          "is_argmax": 0,
+          "log_norm": 1.08
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "trot",
+          "is_argmax": 0,
+          "log_norm": 1.93
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "trot",
+          "is_argmax": 1,
+          "log_norm": 1.82
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "lift.",
+          "is_argmax": 1,
+          "log_norm": 1.43
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "troposphere",
+          "is_argmax": 0,
+          "log_norm": 1.7
+        }
+      ],
+      "887": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "cemetary",
+          "is_argmax": 1,
+          "log_norm": 2.05
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "dentist",
+          "is_argmax": 1,
+          "log_norm": 2.06
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bar",
+          "is_argmax": 1,
+          "log_norm": 2.25
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bar",
+          "is_argmax": 1,
+          "log_norm": 2.24
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "cemetary",
+          "is_argmax": 1,
+          "log_norm": 2.0
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bedroom",
+          "is_argmax": 1,
+          "log_norm": 2.1
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "telescope",
+          "is_argmax": 1,
+          "log_norm": 2.24
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "wedding",
+          "is_argmax": 1,
+          "log_norm": 2.25
+        }
+      ],
+      "998": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Water",
+          "is_argmax": 1,
+          "log_norm": 1.82
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "yeast",
+          "is_argmax": 1,
+          "log_norm": 1.81
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "endocrine",
+          "is_argmax": 1,
+          "log_norm": 1.58
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "nutrients",
+          "is_argmax": 1,
+          "log_norm": 1.72
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "beer",
+          "is_argmax": 1,
+          "log_norm": 1.89
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "fatigue",
+          "is_argmax": 1,
+          "log_norm": 1.91
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "yeast",
+          "is_argmax": 1,
+          "log_norm": 1.84
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "armies",
+          "is_argmax": 1,
+          "log_norm": 1.71
+        }
+      ],
+      "2328": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "garage",
+          "is_argmax": 1,
+          "log_norm": 1.29
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "garage",
+          "is_argmax": 1,
+          "log_norm": 1.3
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "weathering",
+          "is_argmax": 1,
+          "log_norm": 1.45
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "garage",
+          "is_argmax": 0,
+          "log_norm": 1.56
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "store",
+          "is_argmax": 1,
+          "log_norm": 1.69
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "go somewhere",
+          "is_argmax": 1,
+          "log_norm": 1.21
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "valley",
+          "is_argmax": 1,
+          "log_norm": 0.91
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "garage",
+          "is_argmax": 1,
+          "log_norm": 1.01
+        }
+      ],
+      "3568": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "runny nose",
+          "is_argmax": 0,
+          "log_norm": 2.07
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Decibels",
+          "is_argmax": 0,
+          "log_norm": 1.7
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "runny nose",
+          "is_argmax": 0,
+          "log_norm": 1.86
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "internal fertilization",
+          "is_argmax": 0,
+          "log_norm": 1.82
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "respiratory inflammation",
+          "is_argmax": 0,
+          "log_norm": 2.04
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "common cold",
+          "is_argmax": 0,
+          "log_norm": 2.0
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "lungs",
+          "is_argmax": 0,
+          "log_norm": 1.91
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Decibels",
+          "is_argmax": 0,
+          "log_norm": 1.67
+        }
+      ],
+      "3618": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "slot machine",
+          "is_argmax": 0,
+          "log_norm": 2.14
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "piggy bank",
+          "is_argmax": 0,
+          "log_norm": 2.11
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bedbox",
+          "is_argmax": 0,
+          "log_norm": 1.95
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "car wash",
+          "is_argmax": 0,
+          "log_norm": 2.21
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "medicine chest",
+          "is_argmax": 0,
+          "log_norm": 1.95
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "butcher shop",
+          "is_argmax": 0,
+          "log_norm": 1.81
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "wishing well",
+          "is_argmax": 0,
+          "log_norm": 2.14
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "baseball stadium",
+          "is_argmax": 0,
+          "log_norm": 1.91
+        }
+      ],
+      "4333": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "difficult",
+          "is_argmax": 1,
+          "log_norm": 1.56
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "difficult",
+          "is_argmax": 1,
+          "log_norm": 1.3
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "reverse",
+          "is_argmax": 1,
+          "log_norm": 1.79
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "novel",
+          "is_argmax": 1,
+          "log_norm": 1.81
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "darkly",
+          "is_argmax": 1,
+          "log_norm": 0.64
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "knocking over",
+          "is_argmax": 0,
+          "log_norm": 1.08
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "novel",
+          "is_argmax": 1,
+          "log_norm": 1.8
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "revolving",
+          "is_argmax": 1,
+          "log_norm": 0.9
+        }
+      ],
+      "5061": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "magnetricity",
+          "is_argmax": 1,
+          "log_norm": 2.05
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "candle",
+          "is_argmax": 1,
+          "log_norm": 2.16
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "magnetricity",
+          "is_argmax": 1,
+          "log_norm": 2.05
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "urine",
+          "is_argmax": 1,
+          "log_norm": 1.78
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "sifter",
+          "is_argmax": 1,
+          "log_norm": 2.28
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bicycle",
+          "is_argmax": 1,
+          "log_norm": 2.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bomb",
+          "is_argmax": 1,
+          "log_norm": 1.41
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "pincushion",
+          "is_argmax": 1,
+          "log_norm": 1.75
+        }
+      ],
+      "5145": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "birthday cake",
+          "is_argmax": 0,
+          "log_norm": 2.32
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "carafe",
+          "is_argmax": 0,
+          "log_norm": 2.08
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "fountain",
+          "is_argmax": 0,
+          "log_norm": 2.08
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "peace",
+          "is_argmax": 0,
+          "log_norm": 2.37
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "ocean",
+          "is_argmax": 0,
+          "log_norm": 2.08
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "apartment building",
+          "is_argmax": 0,
+          "log_norm": 2.09
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "perfume",
+          "is_argmax": 0,
+          "log_norm": 2.08
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "church",
+          "is_argmax": 0,
+          "log_norm": 2.18
+        }
+      ],
+      "5634": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "measuring",
+          "is_argmax": 0,
+          "log_norm": 1.76
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Freezing temperature",
+          "is_argmax": 0,
+          "log_norm": 1.65
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "the mass of the child",
+          "is_argmax": 0,
+          "log_norm": 1.5
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "change in leadership",
+          "is_argmax": 0,
+          "log_norm": 1.64
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "waterfall",
+          "is_argmax": 0,
+          "log_norm": 1.78
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "permineralization",
+          "is_argmax": 0,
+          "log_norm": 1.47
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "temperature",
+          "is_argmax": 0,
+          "log_norm": 1.29
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "arsenic compounds",
+          "is_argmax": 0,
+          "log_norm": 1.33
+        }
+      ],
+      "6755": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "genetic predisposition",
+          "is_argmax": 0,
+          "log_norm": 1.58
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "forest",
+          "is_argmax": 0,
+          "log_norm": 1.84
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "respiratory and circulatory",
+          "is_argmax": 0,
+          "log_norm": 1.35
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "respiratory and circulatory",
+          "is_argmax": 0,
+          "log_norm": 0.97
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "digestive and respiratory",
+          "is_argmax": 0,
+          "log_norm": 1.48
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "tropical",
+          "is_argmax": 0,
+          "log_norm": 1.44
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "nucleus",
+          "is_argmax": 0,
+          "log_norm": 1.68
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "nucleus",
+          "is_argmax": 0,
+          "log_norm": 1.96
+        }
+      ],
+      "7511": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "have always attracted many other insects as well as honey bees.",
+          "is_argmax": 0,
+          "log_norm": -1.7
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "have always attracted many other insects as well as honey bees.",
+          "is_argmax": 0,
+          "log_norm": -1.83
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "are an inexpensive source of energy.",
+          "is_argmax": 0,
+          "log_norm": -1.69
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "are rarely passed on to the next generation.",
+          "is_argmax": 0,
+          "log_norm": 0.41
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "are a renewable source of energy.",
+          "is_argmax": 0,
+          "log_norm": -0.89
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "started providing small diamonds instead of large ones.",
+          "is_argmax": 0,
+          "log_norm": -1.12
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "it quickly becomes petrified when water is removed.",
+          "is_argmax": 0,
+          "log_norm": -0.39
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "the Moon crosses the orbit of the Sun every 28 days.",
+          "is_argmax": 0,
+          "log_norm": -0.47
+        }
+      ],
+      "7590": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "darkness",
+          "is_argmax": 0,
+          "log_norm": 1.67
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "factory",
+          "is_argmax": 0,
+          "log_norm": 1.83
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "opera",
+          "is_argmax": 0,
+          "log_norm": 1.98
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "gasoline",
+          "is_argmax": 0,
+          "log_norm": 1.53
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "darkness",
+          "is_argmax": 0,
+          "log_norm": 1.38
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "hair",
+          "is_argmax": 0,
+          "log_norm": 1.43
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "lake",
+          "is_argmax": 0,
+          "log_norm": 2.13
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "water",
+          "is_argmax": 0,
+          "log_norm": 1.17
+        }
+      ],
+      "8823": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "sleep",
+          "is_argmax": 0,
+          "log_norm": 2.07
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "thundershock",
+          "is_argmax": 0,
+          "log_norm": 2.48
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "thundershock",
+          "is_argmax": 0,
+          "log_norm": 2.57
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "hibernation.",
+          "is_argmax": 0,
+          "log_norm": 1.85
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "kiss",
+          "is_argmax": 0,
+          "log_norm": 2.08
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "eat fish",
+          "is_argmax": 0,
+          "log_norm": 1.91
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "attack",
+          "is_argmax": 0,
+          "log_norm": 2.24
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "calm",
+          "is_argmax": 0,
+          "log_norm": 2.57
+        }
+      ],
+      "9336": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "hurricanes",
+          "is_argmax": 1,
+          "log_norm": 1.45
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "hurricanes",
+          "is_argmax": 1,
+          "log_norm": 1.58
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "movements in the earth's crust",
+          "is_argmax": 1,
+          "log_norm": 1.41
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "wind",
+          "is_argmax": 1,
+          "log_norm": 1.29
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "seismic activity along fault lines",
+          "is_argmax": 1,
+          "log_norm": 1.4
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "deforestation",
+          "is_argmax": 1,
+          "log_norm": 1.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "movement from tectonic plates",
+          "is_argmax": 1,
+          "log_norm": 1.21
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Sediment",
+          "is_argmax": 1,
+          "log_norm": 1.46
+        }
+      ],
+      "9431": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "food and shelter",
+          "is_argmax": 0,
+          "log_norm": 1.33
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "food",
+          "is_argmax": 1,
+          "log_norm": 1.64
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "food",
+          "is_argmax": 0,
+          "log_norm": 1.79
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "office",
+          "is_argmax": 1,
+          "log_norm": 1.76
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "immune",
+          "is_argmax": 1,
+          "log_norm": 1.32
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "nervous",
+          "is_argmax": 1,
+          "log_norm": 1.38
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "immune",
+          "is_argmax": 1,
+          "log_norm": 1.32
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Food",
+          "is_argmax": 1,
+          "log_norm": 1.23
+        }
+      ],
+      "9831": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "height",
+          "is_argmax": 0,
+          "log_norm": 2.09
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "thermometer",
+          "is_argmax": 0,
+          "log_norm": 2.28
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "veterinarian",
+          "is_argmax": 0,
+          "log_norm": 2.02
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "police station",
+          "is_argmax": 0,
+          "log_norm": 2.21
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "thermometer",
+          "is_argmax": 0,
+          "log_norm": 1.8
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "museum",
+          "is_argmax": 0,
+          "log_norm": 2.13
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "museum",
+          "is_argmax": 0,
+          "log_norm": 2.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "height",
+          "is_argmax": 0,
+          "log_norm": 2.08
+        }
+      ],
+      "10345": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "basement",
+          "is_argmax": 0,
+          "log_norm": 1.94
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "jungle",
+          "is_argmax": 0,
+          "log_norm": 1.95
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "mosque",
+          "is_argmax": 0,
+          "log_norm": 1.98
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "digestive",
+          "is_argmax": 0,
+          "log_norm": 1.58
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "garden",
+          "is_argmax": 0,
+          "log_norm": 2.1
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Flowing water",
+          "is_argmax": 0,
+          "log_norm": 1.65
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "jazz band",
+          "is_argmax": 0,
+          "log_norm": 1.85
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "san diego",
+          "is_argmax": 0,
+          "log_norm": 1.84
+        }
+      ],
+      "11884": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "metals.",
+          "is_argmax": 1,
+          "log_norm": 1.5
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "gravity",
+          "is_argmax": 1,
+          "log_norm": 1.73
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "predator",
+          "is_argmax": 1,
+          "log_norm": 1.63
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "oxygen",
+          "is_argmax": 1,
+          "log_norm": 1.37
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "carbon dioxide",
+          "is_argmax": 0,
+          "log_norm": 1.21
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "gravity",
+          "is_argmax": 1,
+          "log_norm": 1.74
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "gravity",
+          "is_argmax": 1,
+          "log_norm": 1.98
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "gravity",
+          "is_argmax": 1,
+          "log_norm": 1.64
+        }
+      ],
+      "12626": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "surprised",
+          "is_argmax": 1,
+          "log_norm": 2.48
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "surprised",
+          "is_argmax": 1,
+          "log_norm": 2.57
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "body of water",
+          "is_argmax": 1,
+          "log_norm": 2.38
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "body of water",
+          "is_argmax": 1,
+          "log_norm": 2.3
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "appreciation",
+          "is_argmax": 1,
+          "log_norm": 2.11
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "death",
+          "is_argmax": 1,
+          "log_norm": 2.04
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "dirty dishes",
+          "is_argmax": 1,
+          "log_norm": 2.55
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "labor problems",
+          "is_argmax": 1,
+          "log_norm": 2.05
+        }
+      ],
+      "14320": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "injury",
+          "is_argmax": 1,
+          "log_norm": 0.98
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "a phase change",
+          "is_argmax": 1,
+          "log_norm": 0.92
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "injury",
+          "is_argmax": 1,
+          "log_norm": 1.1
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "feel tired",
+          "is_argmax": 0,
+          "log_norm": 1.66
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "to partially cook the produce before canning or freezing",
+          "is_argmax": 0,
+          "log_norm": 0.42
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "tired",
+          "is_argmax": 1,
+          "log_norm": 1.02
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "a compound.",
+          "is_argmax": 1,
+          "log_norm": 1.49
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "fear",
+          "is_argmax": 1,
+          "log_norm": 1.2
+        }
+      ],
+      "14694": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "sadness",
+          "is_argmax": 0,
+          "log_norm": 1.91
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "sadness",
+          "is_argmax": 0,
+          "log_norm": 1.89
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "zoo",
+          "is_argmax": 0,
+          "log_norm": 1.9
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bed",
+          "is_argmax": 0,
+          "log_norm": 2.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "eating",
+          "is_argmax": 0,
+          "log_norm": 2.0
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "sadness",
+          "is_argmax": 0,
+          "log_norm": 2.06
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "museum",
+          "is_argmax": 0,
+          "log_norm": 2.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bed",
+          "is_argmax": 0,
+          "log_norm": 2.12
+        }
+      ],
+      "15067": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "airport",
+          "is_argmax": 0,
+          "log_norm": 2.2
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "church",
+          "is_argmax": 0,
+          "log_norm": 2.16
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "digestive",
+          "is_argmax": 0,
+          "log_norm": 1.73
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "grocery store",
+          "is_argmax": 0,
+          "log_norm": 1.95
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "medicine cabinet",
+          "is_argmax": 0,
+          "log_norm": 1.95
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "factory",
+          "is_argmax": 0,
+          "log_norm": 2.07
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "europe",
+          "is_argmax": 0,
+          "log_norm": 2.14
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "grocery store",
+          "is_argmax": 0,
+          "log_norm": 1.87
+        }
+      ],
+      "15601": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "big house",
+          "is_argmax": 1,
+          "log_norm": 1.07
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "countryside",
+          "is_argmax": 1,
+          "log_norm": 1.44
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "village",
+          "is_argmax": 1,
+          "log_norm": 1.8
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "uncertainty",
+          "is_argmax": 1,
+          "log_norm": 1.56
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "night",
+          "is_argmax": 1,
+          "log_norm": 1.04
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "gate",
+          "is_argmax": 1,
+          "log_norm": 1.03
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "uncertainty",
+          "is_argmax": 1,
+          "log_norm": 1.61
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "surface of earth",
+          "is_argmax": 1,
+          "log_norm": 1.6
+        }
+      ]
+    },
+    "labels": {
+      "780": "Mostly incorrect (non-winning) answer options",
+      "887": "winning answer option",
+      "998": "winning/correct option with high confidence",
+      "2328": "Correct/winning answer options",
+      "3568": "winning/correct answer option",
+      "3618": "Losing answer options",
+      "4333": "winning answer options",
+      "5061": "correct/argmax option (winning choice)",
+      "5145": "losing (incorrect) answer option",
+      "5634": "Incorrect, non-winning answer options",
+      "6755": "incorrect answer option",
+      "7511": "correct answer option (winning choice)",
+      "7590": "losing (non-winning) answer options",
+      "8823": "non-winning answer options",
+      "9336": "winning/correct answer options",
+      "9431": "Short, single-word answer options, often the winning choice",
+      "9831": "incorrect answer option (losing choice)",
+      "10345": "incorrect answer option (distractor)",
+      "11884": "winning/correct answer option",
+      "12626": "correct/winning option",
+      "14320": "Correct-answer options, especially concise responses",
+      "14694": "incorrect answer options (losing choices)",
+      "15067": "Incorrect/non-winning answer option",
+      "15601": "winning option"
+    }
+  },
+  "L28": {
+    "stats": {
+      "val_fve": 0.9738919138908386,
+      "alive_frac": 0.94097900390625,
+      "n_train": 191344,
+      "m": 16384,
+      "k": 32,
+      "downstream_argmax_kept": 0.9932998324958124,
+      "downstream_abs_log_scale": 0.015530939771491782
+    },
+    "top_choice": [
+      14169,
+      14978,
+      10763,
+      15982,
+      940,
+      16160,
+      13630,
+      10564,
+      570,
+      3401,
+      13168,
+      9772,
+      7596,
+      11726,
+      736,
+      15528,
+      1465,
+      14472,
+      2062,
+      4309,
+      11866,
+      143,
+      2879,
+      14308,
+      511
+    ],
+    "top_confidence": [
+      3401,
+      13630,
+      940,
+      16160,
+      9772,
+      7596,
+      11726,
+      10564,
+      736,
+      143,
+      929,
+      8382,
+      570,
+      14169,
+      10763,
+      14157,
+      13126,
+      14802,
+      3617,
+      2517,
+      16310,
+      1465,
+      14978,
+      2576,
+      7505
+    ],
+    "overlap_top25": 15,
+    "corr_choice_vs_conf_scores": 0.631014497951338,
+    "top_choice_scores": [
+      0.8929415920139139,
+      0.8884990283013374,
+      0.8843462816743561,
+      0.8432389703741977,
+      0.7394373131558649,
+      0.7347601248781059,
+      0.7297903399580827,
+      0.45519121232188864,
+      0.43073977360385385,
+      0.3622971440319036,
+      0.362192092872633,
+      0.3380783429999855,
+      0.3366800134993524,
+      0.33463653157611306,
+      0.2908039100819424,
+      0.27570326567889736,
+      0.2658747827732255,
+      0.22959560943571988,
+      0.19622841177027095,
+      0.19503147914331875,
+      0.17666754424585562,
+      0.1731503787823656,
+      0.1698287236016709,
+      0.15947846198349502,
+      0.15786284694427066
+    ],
+    "top_conf_scores": [
+      0.727805927885945,
+      0.6886525098316628,
+      0.6880791087323985,
+      0.6866410186873053,
+      0.5763650707799414,
+      0.5744008863891941,
+      0.5706398652258792,
+      0.5487965908507619,
+      0.45980360473196047,
+      0.41473536987248427,
+      0.40140713654751026,
+      0.4006675865426224,
+      0.38648501238721467,
+      0.37053603443704647,
+      0.35867633772578356,
+      0.3372611937480061,
+      0.3353960407584634,
+      0.3314642284447715,
+      0.32499500496420825,
+      0.3153918307881537,
+      0.3113470236448167,
+      0.3100296599781636,
+      0.30975920518917677,
+      0.2991440553189815,
+      0.29134945582523675
+    ],
+    "ablate_conf10": {
+      "abs_log_scale": 0.3778693622259623,
+      "log_scale": -0.26882656799605115,
+      "rotation_deg": 13.540311605587608,
+      "argmax_kept": 0.9413735343383585
+    },
+    "ablate_choice10": {
+      "abs_log_scale": 1.8313868414731702,
+      "log_scale": -1.830919825515006,
+      "rotation_deg": 27.404537743718848,
+      "argmax_kept": 0.745393634840871
+    },
+    "ablate_random10": {
+      "abs_log_scale": 0.0006103664125372655,
+      "log_scale": -0.00035385222952061664,
+      "rotation_deg": 0.04299581154445221,
+      "argmax_kept": 0.998324958123953
+    },
+    "greedyB_top_moved": [
+      15982,
+      3401,
+      14978,
+      9772,
+      7596,
+      10763,
+      11726,
+      940,
+      14169,
+      16160,
+      13630,
+      8382,
+      8156,
+      10564,
+      6779,
+      929,
+      570,
+      14157,
+      7070,
+      10902,
+      5839,
+      2062,
+      6669,
+      13168,
+      14308
+    ],
+    "greedyB_moved_overlap_conf25": 15,
+    "greedyB_moved_overlap_choice25": 16,
+    "examples": {
+      "143": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "smile",
+          "is_argmax": 0,
+          "log_norm": 1.57
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "rome",
+          "is_argmax": 0,
+          "log_norm": 1.57
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "apartment complex",
+          "is_argmax": 0,
+          "log_norm": 1.79
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "see favorite show",
+          "is_argmax": 0,
+          "log_norm": 1.73
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "eye",
+          "is_argmax": 0,
+          "log_norm": 1.96
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "sigh",
+          "is_argmax": 0,
+          "log_norm": 1.49
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "weight.",
+          "is_argmax": 0,
+          "log_norm": 1.72
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "fort knox",
+          "is_argmax": 0,
+          "log_norm": 1.9
+        }
+      ],
+      "570": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bullbleep",
+          "is_argmax": 1,
+          "log_norm": 1.72
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "dog show",
+          "is_argmax": 1,
+          "log_norm": 1.78
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bamboo",
+          "is_argmax": 1,
+          "log_norm": 1.43
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bees",
+          "is_argmax": 0,
+          "log_norm": 1.96
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "jack",
+          "is_argmax": 1,
+          "log_norm": 1.76
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "oxygen",
+          "is_argmax": 1,
+          "log_norm": 1.18
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Something found in a power strip",
+          "is_argmax": 1,
+          "log_norm": 1.35
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "connecticut",
+          "is_argmax": 1,
+          "log_norm": 1.54
+        }
+      ],
+      "736": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "datahub",
+          "is_argmax": 1,
+          "log_norm": 2.55
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "magnetricity",
+          "is_argmax": 1,
+          "log_norm": 2.05
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "magnetricity",
+          "is_argmax": 1,
+          "log_norm": 2.05
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "doorway",
+          "is_argmax": 1,
+          "log_norm": 1.86
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "datahub",
+          "is_argmax": 1,
+          "log_norm": 2.14
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "wings",
+          "is_argmax": 1,
+          "log_norm": 1.81
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "nucleotides",
+          "is_argmax": 1,
+          "log_norm": 1.84
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "doorway",
+          "is_argmax": 1,
+          "log_norm": 1.9
+        }
+      ],
+      "929": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "pain",
+          "is_argmax": 0,
+          "log_norm": 1.77
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "death",
+          "is_argmax": 0,
+          "log_norm": 1.64
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "injury",
+          "is_argmax": 0,
+          "log_norm": 1.95
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bed",
+          "is_argmax": 0,
+          "log_norm": 2.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "eating",
+          "is_argmax": 0,
+          "log_norm": 2.0
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bed",
+          "is_argmax": 0,
+          "log_norm": 2.12
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "zoo",
+          "is_argmax": 0,
+          "log_norm": 1.9
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "arthritis",
+          "is_argmax": 0,
+          "log_norm": 1.94
+        }
+      ],
+      "940": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "water",
+          "is_argmax": 1,
+          "log_norm": 1.55
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "insulin.",
+          "is_argmax": 1,
+          "log_norm": 1.99
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "wallet",
+          "is_argmax": 1,
+          "log_norm": 1.8
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Energy.",
+          "is_argmax": 1,
+          "log_norm": 1.86
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "vision",
+          "is_argmax": 1,
+          "log_norm": 1.87
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "cd player",
+          "is_argmax": 1,
+          "log_norm": 1.6
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Temperature",
+          "is_argmax": 1,
+          "log_norm": 1.8
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "insulin.",
+          "is_argmax": 1,
+          "log_norm": 1.99
+        }
+      ],
+      "3401": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "take time",
+          "is_argmax": 0,
+          "log_norm": 0.69
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "hypothesis.",
+          "is_argmax": 0,
+          "log_norm": 1.03
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "hypothesis, law, theory",
+          "is_argmax": 0,
+          "log_norm": -0.97
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "potential",
+          "is_argmax": 0,
+          "log_norm": 0.66
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "hypothesis.",
+          "is_argmax": 0,
+          "log_norm": 0.8
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "effort",
+          "is_argmax": 0,
+          "log_norm": 1.7
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "budget",
+          "is_argmax": 1,
+          "log_norm": 0.36
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "initial",
+          "is_argmax": 0,
+          "log_norm": 1.0
+        }
+      ],
+      "7596": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "painting",
+          "is_argmax": 0,
+          "log_norm": 1.94
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "coins",
+          "is_argmax": 0,
+          "log_norm": 1.65
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "car accident",
+          "is_argmax": 0,
+          "log_norm": 1.82
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "park",
+          "is_argmax": 0,
+          "log_norm": 1.9
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "boat",
+          "is_argmax": 0,
+          "log_norm": 1.89
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "stopwatch",
+          "is_argmax": 0,
+          "log_norm": 2.14
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "electrical circuit",
+          "is_argmax": 0,
+          "log_norm": 1.77
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "rock concert",
+          "is_argmax": 0,
+          "log_norm": 1.76
+        }
+      ],
+      "8382": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "eating",
+          "is_argmax": 0,
+          "log_norm": 2.0
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "shoes",
+          "is_argmax": 0,
+          "log_norm": 1.94
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "death",
+          "is_argmax": 0,
+          "log_norm": 1.64
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "fort",
+          "is_argmax": 0,
+          "log_norm": 2.38
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "injury",
+          "is_argmax": 0,
+          "log_norm": 1.95
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "backyard",
+          "is_argmax": 0,
+          "log_norm": 2.0
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "museum",
+          "is_argmax": 0,
+          "log_norm": 2.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bed",
+          "is_argmax": 0,
+          "log_norm": 2.19
+        }
+      ],
+      "9772": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "tetrahedron",
+          "is_argmax": 0,
+          "log_norm": 2.13
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "painting",
+          "is_argmax": 0,
+          "log_norm": 1.94
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "gravesite",
+          "is_argmax": 0,
+          "log_norm": 2.15
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "park",
+          "is_argmax": 0,
+          "log_norm": 1.92
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "washing machine",
+          "is_argmax": 0,
+          "log_norm": 1.9
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "wallpaper",
+          "is_argmax": 0,
+          "log_norm": 2.14
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "oven",
+          "is_argmax": 0,
+          "log_norm": 1.88
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "rock concert",
+          "is_argmax": 0,
+          "log_norm": 1.76
+        }
+      ],
+      "10564": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "church",
+          "is_argmax": 1,
+          "log_norm": 2.11
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "flea market",
+          "is_argmax": 1,
+          "log_norm": 2.13
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "running",
+          "is_argmax": 1,
+          "log_norm": 2.12
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "card shark",
+          "is_argmax": 1,
+          "log_norm": 1.9
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "restaurant",
+          "is_argmax": 1,
+          "log_norm": 2.25
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "restaurant",
+          "is_argmax": 1,
+          "log_norm": 2.21
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "rain",
+          "is_argmax": 1,
+          "log_norm": 2.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "ocean",
+          "is_argmax": 1,
+          "log_norm": 2.01
+        }
+      ],
+      "10763": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "jungle",
+          "is_argmax": 1,
+          "log_norm": 0.95
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "labyrinth",
+          "is_argmax": 1,
+          "log_norm": 1.46
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "evolution",
+          "is_argmax": 1,
+          "log_norm": 1.64
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "woods",
+          "is_argmax": 1,
+          "log_norm": 1.7
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "countryside",
+          "is_argmax": 1,
+          "log_norm": 1.38
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "northern",
+          "is_argmax": 1,
+          "log_norm": 0.9
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "canteen",
+          "is_argmax": 1,
+          "log_norm": 1.26
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Flowers",
+          "is_argmax": 1,
+          "log_norm": 1.54
+        }
+      ],
+      "11726": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "park",
+          "is_argmax": 0,
+          "log_norm": 1.92
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "stopwatch",
+          "is_argmax": 0,
+          "log_norm": 2.14
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bones",
+          "is_argmax": 0,
+          "log_norm": 1.68
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "park",
+          "is_argmax": 0,
+          "log_norm": 1.9
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "hormones",
+          "is_argmax": 0,
+          "log_norm": 1.8
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "painting",
+          "is_argmax": 0,
+          "log_norm": 1.94
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "fort",
+          "is_argmax": 0,
+          "log_norm": 2.38
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "museum",
+          "is_argmax": 0,
+          "log_norm": 2.19
+        }
+      ],
+      "13168": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "lake",
+          "is_argmax": 1,
+          "log_norm": 1.05
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "arboretum",
+          "is_argmax": 1,
+          "log_norm": 1.25
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "lake",
+          "is_argmax": 1,
+          "log_norm": 1.05
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "organ",
+          "is_argmax": 1,
+          "log_norm": 0.84
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "atom.",
+          "is_argmax": 1,
+          "log_norm": 1.09
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "podium",
+          "is_argmax": 0,
+          "log_norm": 1.33
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "earthworm",
+          "is_argmax": 0,
+          "log_norm": 2.06
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "awl",
+          "is_argmax": 1,
+          "log_norm": 1.1
+        }
+      ],
+      "13630": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "bar",
+          "is_argmax": 1,
+          "log_norm": 1.68
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "market",
+          "is_argmax": 1,
+          "log_norm": 1.72
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "apartment complex",
+          "is_argmax": 1,
+          "log_norm": 2.04
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "closet",
+          "is_argmax": 1,
+          "log_norm": 1.93
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "closet",
+          "is_argmax": 1,
+          "log_norm": 1.94
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "garage",
+          "is_argmax": 1,
+          "log_norm": 1.71
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "shopping mall",
+          "is_argmax": 1,
+          "log_norm": 1.98
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "supermarket",
+          "is_argmax": 1,
+          "log_norm": 2.04
+        }
+      ],
+      "14169": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "the park",
+          "is_argmax": 1,
+          "log_norm": 1.36
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "To prevent insects from mating",
+          "is_argmax": 1,
+          "log_norm": 1.38
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "cabinet",
+          "is_argmax": 1,
+          "log_norm": 1.19
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "a pathogens",
+          "is_argmax": 1,
+          "log_norm": 1.33
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "an adaptation",
+          "is_argmax": 1,
+          "log_norm": 0.99
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "an adaptation",
+          "is_argmax": 1,
+          "log_norm": 0.94
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "every month",
+          "is_argmax": 1,
+          "log_norm": 1.37
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "in the autumn season",
+          "is_argmax": 1,
+          "log_norm": 1.26
+        }
+      ],
+      "14978": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "feeling good",
+          "is_argmax": 1,
+          "log_norm": 1.13
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "colder weather",
+          "is_argmax": 1,
+          "log_norm": 0.93
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "physical exertion",
+          "is_argmax": 0,
+          "log_norm": 1.78
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "good sleep",
+          "is_argmax": 1,
+          "log_norm": 1.01
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "Conduction transfers energy from the spoon to the hot chocolate.",
+          "is_argmax": 1,
+          "log_norm": 0.37
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "a force that continually acts on the object in the direction the object is movin",
+          "is_argmax": 1,
+          "log_norm": 1.32
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "heat gain or heat loss",
+          "is_argmax": 1,
+          "log_norm": 1.22
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "commensalism",
+          "is_argmax": 0,
+          "log_norm": 1.38
+        }
+      ],
+      "15982": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "city",
+          "is_argmax": 0,
+          "log_norm": 1.86
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "excitement",
+          "is_argmax": 0,
+          "log_norm": 1.79
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "chemical to mechanical",
+          "is_argmax": 0,
+          "log_norm": 0.86
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "chemical to thermal",
+          "is_argmax": 0,
+          "log_norm": 1.3
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "competition",
+          "is_argmax": 0,
+          "log_norm": 1.38
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "depression",
+          "is_argmax": 0,
+          "log_norm": 1.49
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "depression",
+          "is_argmax": 0,
+          "log_norm": 1.32
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "dependence",
+          "is_argmax": 0,
+          "log_norm": 1.18
+        }
+      ],
+      "16160": [
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "autumn",
+          "is_argmax": 1,
+          "log_norm": 1.79
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "autumn",
+          "is_argmax": 1,
+          "log_norm": 1.66
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "velocity",
+          "is_argmax": 1,
+          "log_norm": 1.9
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "drunkenness",
+          "is_argmax": 1,
+          "log_norm": 1.86
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "drunkenness",
+          "is_argmax": 1,
+          "log_norm": 2.05
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "jail",
+          "is_argmax": 0,
+          "log_norm": 2.13
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "classifying",
+          "is_argmax": 1,
+          "log_norm": 1.83
+        },
+        {
+          "question": "Which option correctly answers the question in the text?",
+          "option": "meditation",
+          "is_argmax": 1,
+          "log_norm": 1.61
+        }
+      ]
+    },
+    "labels": {
+      "143": "incorrect/non-winning option",
+      "570": "Winning/correct answer option",
+      "736": "winning option (argmax prediction)",
+      "929": "losing answer options",
+      "940": "Correct answer option (winning prediction)",
+      "3401": "Short, single-word answer options, mostly losing",
+      "7596": "correct (winning) answer options",
+      "8382": "Non-winning answer options (distractors)",
+      "9772": "non-winning answer options",
+      "10564": "Correct (winning) answer options",
+      "10763": "winning/correct answer option",
+      "11726": "Incorrect (non-winning) answer options",
+      "13168": "Winning (argmax) answer options",
+      "13630": "winning options that are places or locations",
+      "14169": "winning answer option",
+      "14978": "winning/correct answer options",
+      "15982": "losing answer options (distractors)",
+      "16160": "predicted winning option"
+    }
+  },
+  "wall_s": 1340.2
+}

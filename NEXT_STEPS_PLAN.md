@@ -217,3 +217,12 @@ Spent so far: $12.23 of the original $100 cap. This plan fits in the remainder.
 - **No more jailbreak work** beyond keeping C4 as a short section.
 - **No SAE feature labelling** unless it is redone blind and scored on held-out data.
 - **Claim-only edits.** No claim is upgraded without its control; claims that fail their gate are downgraded in the text.
+
+**Phase 7 outcome, 2026-10-09.** Release in `release/`:
+
+- **Raw results:** JSON plus small pickles. SAE weights stay on the Modal volume.
+- **Data:** splits, with jailbreak and injection texts replaced by hashed manifests.
+- **Report:** `release/scripts/build_report.py` rebuilds the report (HTML and PDF) from `release/results` alone, so every number in it is computed rather than typed.
+- **README:** environment, pinned revisions and per-task reproduction commands.
+- **Doc:** reordered with C3 as the headline and retitled "When Labels Override Evidence".
+- **Root copies:** `How_Laya_Chooses*.html/pdf` in the repo root now mirror the new report.

@@ -1,0 +1,306 @@
+{
+  "models": {
+    "bulk": "gpt-5.6-luna",
+    "careful": "gpt-5.6-terra"
+  },
+  "counterfactuals": {
+    "n": 145,
+    "orig_flagged": 1.0,
+    "edited_flagged": 0.8206896551724138,
+    "mean_logodds_drop": 7.707245826721191
+  },
+  "counterfactual_probe_state": [
+    {
+      "layer": 0,
+      "acc": 0.5896551724137931,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 1,
+      "acc": 0.6655172413793103,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 2,
+      "acc": 0.6655172413793103,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 3,
+      "acc": 0.6655172413793103,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 4,
+      "acc": 0.6793103448275862,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 5,
+      "acc": 0.6586206896551724,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 6,
+      "acc": 0.6655172413793103,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 7,
+      "acc": 0.6689655172413793,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 8,
+      "acc": 0.6448275862068965,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 9,
+      "acc": 0.6551724137931034,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 10,
+      "acc": 0.6862068965517242,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 11,
+      "acc": 0.6689655172413793,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 12,
+      "acc": 0.6620689655172414,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 13,
+      "acc": 0.6689655172413793,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 14,
+      "acc": 0.6517241379310345,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 15,
+      "acc": 0.6379310344827587,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 16,
+      "acc": 0.6620689655172414,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 17,
+      "acc": 0.6793103448275862,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 18,
+      "acc": 0.6620689655172414,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 19,
+      "acc": 0.6758620689655173,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 20,
+      "acc": 0.6758620689655173,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 21,
+      "acc": 0.6931034482758621,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 22,
+      "acc": 0.6931034482758621,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 23,
+      "acc": 0.696551724137931,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 24,
+      "acc": 0.6724137931034483,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 25,
+      "acc": 0.6931034482758621,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 26,
+      "acc": 0.6862068965517242,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 27,
+      "acc": 0.6931034482758621,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 28,
+      "acc": 0.6827586206896552,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 29,
+      "acc": 0.6862068965517242,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    },
+    {
+      "layer": 30,
+      "acc": 0.6793103448275862,
+      "acc_sd": 0.0,
+      "control_acc": null,
+      "selectivity": null
+    }
+  ],
+  "c3_llm_behaviour": {
+    "semantic_tf/slots_default": {
+      "acc_normal": 0.7849779086892489,
+      "acc_swapped": 0.45508100147275404,
+      "label_following_rate": 0.5984990619136961,
+      "mean_logodds_shift_toward_label": 3.4017087686395433
+    },
+    "semantic_tf/slots_swapped": {
+      "acc_normal": 0.7997054491899853,
+      "acc_swapped": 0.2650957290132548,
+      "label_following_rate": 0.8950276243093923,
+      "mean_logodds_shift_toward_label": 4.804432932161267
+    },
+    "semantic_yn/slots_default": {
+      "acc_normal": 0.7879234167893961,
+      "acc_swapped": 0.22974963181148747,
+      "label_following_rate": 0.9626168224299065,
+      "mean_logodds_shift_toward_label": 5.176232271938858
+    },
+    "semantic_yn/slots_swapped": {
+      "acc_normal": 0.7997054491899853,
+      "acc_swapped": 0.24300441826215022,
+      "label_following_rate": 0.9300184162062615,
+      "mean_logodds_shift_toward_label": 5.69176994402384
+    },
+    "symbolic_ab/slots_default": {
+      "acc_normal": 0.8026509572901326,
+      "acc_swapped": 0.8217967599410898,
+      "label_following_rate": 0.03302752293577982,
+      "mean_logodds_shift_toward_label": 0.16610740245880892
+    },
+    "symbolic_ab/slots_swapped": {
+      "acc_normal": 0.8055964653902798,
+      "acc_swapped": 0.8100147275405007,
+      "label_following_rate": 0.021937842778793418,
+      "mean_logodds_shift_toward_label": 0.3221755554468888
+    },
+    "neutral_sym/slots_default": {
+      "acc_normal": 0.8026509572901326,
+      "acc_swapped": 0.8114874815905744,
+      "label_following_rate": 0.01834862385321101,
+      "mean_logodds_shift_toward_label": 0.24056732672128128
+    },
+    "neutral_sym/slots_swapped": {
+      "acc_normal": 0.812960235640648,
+      "acc_swapped": 0.8262150220913107,
+      "label_following_rate": 0.007246376811594203,
+      "mean_logodds_shift_toward_label": 0.4336571222903627
+    }
+  },
+  "c3_llm_knockout": {
+    "base": {
+      "acc_normal": 0.7849779086892489,
+      "acc_swapped": 0.45508100147275404,
+      "label_following_rate": 0.5984990619136961,
+      "swap_gap": 0.32989690721649484
+    },
+    "mask_to_labels@local": {
+      "acc_normal": 0.8114874815905744,
+      "acc_swapped": 0.812960235640648,
+      "label_following_rate": 0.041742286751361164,
+      "swap_gap": -0.0014727540500736325
+    },
+    "mask_to_labels@global": {
+      "acc_normal": 0.7864506627393225,
+      "acc_swapped": 0.5331369661266568,
+      "label_following_rate": 0.4794007490636704,
+      "swap_gap": 0.2533136966126657
+    }
+  },
+  "llm_usage": {
+    "prompt_tokens": 159516,
+    "completion_tokens": 186334,
+    "calls": 1293
+  }
+}
