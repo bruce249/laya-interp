@@ -393,3 +393,21 @@ Shuffled noul option order in every arm; same data, loss (RLCD), init and budget
 - 524 with a verified contradicting edit;
 - gold "holds" rate 0.478;
 - SHA-256 `05c0217cbd11f7205f7bba88f15c1ae242e4155019a8d3f06e7f1b90de87fa48`.
+
+**Phase 9 outcomes (2026-10-10).**
+
+- **Q1 (fresh benchmark, yes/no label-following, all-layer guard).**
+  - laya 4.8%, typed 2.3%, multilingual 0.6%.
+  - Planted s0–s5: 3.6, 32.7, 5.8, 10.2, 4.7, 13.7%.
+  - Only 3 of 6 planted seeds are ≤ 10%. **Prediction failed.**
+  - The random-edge all-layer control stays within 10 points of no intervention in 9 of 9 models: the effect is specific.
+  - Extended guard, all layers: ≤ 10% in 5 of 6 seeds; s1 stays at 23.6%.
+  - s1 and s5 lose 24–30 accuracy points.
+- **Q2 (D1, 6 seeds).**
+  - Per seed: 2.8, 31.2, 98.5, 94.7, 92.1, 81.8% (mean 66.9%).
+  - Exact permutation tests: D1 vs baseline p = 0.024; D1 vs planted p = 0.34.
+  - A redundant label is relied on in 4 of 6 seeds.
+- **Q3 (RoBERTa, encoder_lr 1e-5).**
+  - All 6 runs learned (BoolQ 0.773–0.820).
+  - Label-following: planted 97.8, 82.3, 92.4% vs baseline 66.8, 4.6, 6.7%. Every planted run exceeds every baseline run (exact p = 0.10, the minimum for 3 vs 3).
+  - All-layer block on planted runs: 6.0, 2.8, 37.6%, so 2 of 3 are ≤ 10%. **Prediction partly met.**

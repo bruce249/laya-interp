@@ -96,13 +96,15 @@ GALL = {n: J(f"phase8/guardall_{n}.json") for n in ("laya", "p5_planted_s0", "p5
 DOSE_ARMS = {"Baseline: default labels, fixed order": ["ctrl_rlcd", "ctrl_rlcd_s1", "ctrl_rlcd_s2", "p5_baseline_s3",
                                                        "p5_baseline_s4", "p5_baseline_s5"],
              "D0: label random, informative text": [f"p5_dose_d0_s{i}" for i in range(3)],
-             "D1: label always right, informative text": [f"p5_dose_d1_s{i}" for i in range(3)],
+             "D1: label always right, informative text": [f"p5_dose_d1_s{i}" for i in range(6)],
              "D2: label right 75%, neutral text": [f"p5_dose_d2_s{i}" for i in range(3)],
              "D3: label right 90%, neutral text": [f"p5_dose_d3_s{i}" for i in range(3)],
              "Planted: label always right, neutral text": [f"p5_planted_s{i}" for i in range(6)]}
 BENCH = {n: J(f"phase8/bench_{n}.json") for ns in DOSE_ARMS.values() for n in ns}
-ROB = {n: J(f"phase8/rob_{n}.json") for n in [f"p8rob_planted_s{i}" for i in range(3)] +
-       [f"p8rob_baseline_s{i}" for i in range(3)]}
+ROB = {n: J(f"phase8/rob_{n}.json") for n in [f"{t}_{r}_s{i}" for t in ("p8rob", "p9rob")
+                                                for r in ("planted", "baseline") for i in range(3)]}
+BENCH2 = {n: J(f"phase9/bench2_{n}.json") for n in ["laya", "typed", "multilingual"] +
+          [f"p5_planted_s{i}" for i in range(6)]}
 
 # ---------------------------------------------------------------- C3 numbers
 beh = FP32["track3_behaviour"]
@@ -279,6 +281,14 @@ dose_guard = {a: [BENCH[n]["guard"]["yes_no"]["real"]["label_following"] for n i
 dose_acc = {a: [BENCH[n]["none"]["yes_no"]["real"]["acc_normal"] for n in ns] for a, ns in DOSE_ARMS.items()}
 _pl, _bl = dose_vals["Planted: label always right, neutral text"], dose_vals["Baseline: default labels, fixed order"]
 p8_perm = perm_p(_pl, _bl)
+_d1 = dose_vals["D1: label always right, informative text"]
+p9_d1_base, p9_d1_pl = perm_p(_d1, _bl), perm_p(_d1, _pl)
+_rob_lf = lambda t, r: [ROB[f"{t}_{r}_s{i}"]["eval"]["conflict_bench"]["yes_no/none"]["label_following"] for i in range(3)]  # noqa: E731
+p9_rob = perm_p(_rob_lf("p9rob", "planted"), _rob_lf("p9rob", "baseline"))
+_lf2 = lambda n, iv: BENCH2[n][iv]["yes_no"]["real"]["label_following"]  # noqa: E731
+q1_planted_ok = sum(_lf2(f"p5_planted_s{i}", "guard_all_layers") <= 0.10 for i in range(6))
+q1_ext_ok = sum(_lf2(f"p5_planted_s{i}", "guard_extended_all_layers") <= 0.10 for i in range(6))
+q1_ctrl_ok = sum(abs(_lf2(n, "random_edges_all_layers") - _lf2(n, "none")) <= 0.10 for n in BENCH2)
 c5_M = seed_stats(lambda d: d["interaction"]["mean_abs_M_centered"]["est"])
 c5_ece = seed_stats(lambda d: d["baseline"]["ece_raw"])
 c5_acc = seed_stats(lambda d: d["baseline"]["accuracy"]["est"])
@@ -327,7 +337,8 @@ atg = [
      f"MultiRC {pct(e4['MultiRC']['semantic_yn']['plain']['label_following'])} → {pct(e4['MultiRC']['semantic_yn']['guard']['label_following'])}"],
     ["C3 · origin", "Shown by retraining (6 vs 6 seeds)",
      f"planted {pct(np.mean(_pl), 1)} vs baseline {pct(np.mean(_bl), 1)} on the frozen benchmark; exact permutation "
-     f"p = {p8_perm:.4f}; a weaker but sole-cue label (90%) is enough"],
+     f"p = {p8_perm:.4f}; a 90%-reliable sole-cue label is enough, and {sum(v > 0.5 for v in _d1)} of 6 seeds rely on a "
+     f"label that is redundant with the option text"],
     ["C1 · order vs competition", "Separable",
      f"blocking option interaction removes {ci(P1['laya']['confirm']['flip_effects']['interaction_effect_positions_original'])} "
      f"points of flips; order-invariance keeps {pct(kept('laya'))} of competition"],
@@ -496,15 +507,15 @@ for arm, vals_ in dose_vals.items():
     dose_rows.append([arm, ", ".join(f"{100 * v:.1f}" for v in vals_), f"{100 * np.mean(vals_):.1f}",
                       ", ".join(f"{100 * v:.1f}" for v in dose_guard[arm]), f3(np.mean(dose_acc[arm]))])
 gall_rows = []
-for n in ("laya", "p5_planted_s0", "p5_planted_s1", "p5_planted_s2", "p5_planted_s3", "p5_planted_s4", "p5_planted_s5"):
-    g = GALL[n]
+for n, g in BENCH2.items():
     gall_rows.append([n] + [f"{pct(g[iv]['yes_no']['real']['label_following'], 1)} ({f3(g[iv]['yes_no']['real']['acc_normal'])})"
-                            for iv in ("none", "guard", "guard_all_layers", "guard_extended_all_layers")])
+                            for iv in ("none", "guard", "guard_all_layers", "guard_extended_all_layers",
+                                       "random_edges_all_layers")])
 rob_rows = []
 for n, d in ROB.items():
     c, h = d["eval"]["conflict_bench"], d["eval"]["boolq_heldout"]
     learned = h["yes_no/none"]["acc_normal"] > 0.7
-    rob_rows.append([n.replace("p8rob_", "RoBERTa "), f3(h["yes_no/none"]["acc_normal"]) + ("" if learned else " (did not learn)"),
+    rob_rows.append([n.replace("p8rob_", "RoBERTa, lr 2.5e-5, ").replace("p9rob_", "RoBERTa, lr 1e-5, "), f3(h["yes_no/none"]["acc_normal"]) + ("" if learned else " (did not learn)"),
                      pct(c["yes_no/none"]["label_following"], 1), pct(c["yes_no/label"]["label_following"], 1),
                      f"{f3(c['yes_no/none']['acc_normal'])} → {f3(c['yes_no/evidence']['acc_normal'])}"])
 sections.append("<h3>2.7 Dose response, guard scope and an external architecture</h3>" + table(
@@ -512,19 +523,29 @@ sections.append("<h3>2.7 Dose response, guard scope and an external architecture
      "With local guard per seed (%)", "Accuracy"], dose_rows) + f"""
 <p>Planted vs baseline with 6 seeds each: exact two-sided permutation p = {p8_perm:.4f} (the smallest value this test allows:
 every planted model exceeds every baseline model). A sole-cue label that is right only 75% or 90% of the time already
-produces strong label-following. When the label is redundant with informative option text (D1), reliance on it depends on the
-seed (one seed of three at {100 * max(dose_vals['D1: label always right, informative text']):.0f}%). Baseline models are not immune on
-this benchmark (one of six seeds at {100 * max(_bl):.0f}%).</p>""" + table(
-    ["Model (exploratory, post hoc)", "None", "Guard, local layers", "Guard, all layers", "Extended guard, all layers"],
-    gall_rows) + """
-<p>Label-following (accuracy). The local-only guard's uneven effect on retrained models is mostly a scope issue: blocking the
-same [MASK]→label edges in every layer removes most label-following in most seeds, so the retrained models use the same edge
-class but in different layers. In two seeds the all-layer block also costs 20+ accuracy points: those models rely on the label
-even to answer normally.</p>""" + table(
+produces strong label-following. A label that is redundant with informative option text (D1, 6 seeds) is also relied on in
+{sum(v > 0.5 for v in _d1)} of 6 seeds: D1 vs baseline p = {p9_d1_base:.3f}, D1 vs planted p = {p9_d1_pl:.2f}. The pre-registered
+prediction that D1 would stay low was wrong: the label word only needs to identify the option, not be its sole cue. Baseline models
+are not immune on this benchmark (one of six seeds at {100 * max(_bl):.0f}%).</p>
+<p><b>Guard scope, confirmatory test (Phase 9).</b> After seeing the local guard work unevenly on retrained models, we froze a
+second benchmark (600 new MNLI + QNLI items, no overlap, SHA-256 05c0217c…) and a prediction: blocking [MASK]→label in all layers
+leaves ≤ 10% label-following in laya, typed and multilingual and in at least 5 of 6 planted seeds, while the same number of random
+edges blocked in all layers changes nothing. Result: the Laya checkpoints pass; only {q1_planted_ok} of 6 planted seeds do, so the
+prediction <b>failed</b>. The random-edge control stays within 10 points of no intervention in {q1_ctrl_ok} of {len(BENCH2)} models,
+so the effect is specific. Adding option text→label edges (extended, all layers) reaches ≤ 10% in {q1_ext_ok} of 6 seeds.</p>""" + table(
+    ["Fresh benchmark (yes/no, accuracy)", "None", "Guard, local layers", "Guard, all layers", "Extended guard, all layers",
+     "Control: random edges, all layers"], gall_rows) + """
+<p>Reading: retrained models read the label through the same two edge classes as laya ([MASK]→label and option text→label), in
+different layers and proportions per seed. In two seeds (s1, s5) blocking them also costs 20–30 accuracy points, and seed 1 keeps
+about a quarter of its label-following: there the label is entangled with normal answering, and an attention block alone is
+not a clean fix.</p>""" + table(
     ["External model (RoBERTa-large, option-marker head)", "BoolQ accuracy", "Label-following", "With [MASK]→label block",
      "Accuracy, none → question→passage blocked"], rob_rows) + """
-<p>RoBERTa replicates the training-origin result and the block's effect in the runs that learned the task, but 3 of 6 runs
-did not learn it (laya's learning rate is tuned for ModernBERT), so this is a partial replication.</p>""")
+<p>At laya's learning rate (2.5e-5, no warmup) 3 of 6 RoBERTa runs did not learn. Rerun at 1e-5 (pre-registered, all runs
+reported): all 6 learned (BoolQ ≥ 0.77). Every planted run exceeds every baseline run (exact p = """ + f"{p9_rob:.2f}" + """, the
+minimum for 3 vs 3 seeds), and the all-layer block brings 2 of 3 planted runs to ≤ 10% (the third: 37.6%). One baseline run
+also learned the shortcut (66.8%). The training-origin result therefore replicates in a second architecture; the block is
+effective but not complete.</p>""")
 
 c1rows = [[C1NAMES[c], f3(fp1[c]["accuracy"]), pct(fp1[c]["reversal_flip_rate"], 1), f3(fp1[c]["mean_abs_M_centered"])]
           for c in ("sequential", "options_blocked_seqpos", "shipped_parallel_positions", "masked_parallel_all")]
@@ -623,12 +644,12 @@ C1 and C2 describe how it handles options, not tuned QA behaviour.</li>
 passages and jailbreak rewrites were checked by a second model, not by hand; SAE feature labels were contaminated and are not used.</li>
 <li>Human audits of the GPT-written items, contradicting edits, jailbreak rewrites and style pairs are prepared
 (<code>audit/</code>) but not yet done.</li>
-<li>The all-layer guard results on retrained models are exploratory (added after seeing the local-guard results); the RoBERTa
-replication is partial (3 of 6 runs did not learn).</li>
+<li>The all-layer guard's pre-registered prediction failed on retrained models (3 of 6 seeds ≤ 10%); RoBERTa has 3 seeds per arm,
+so its comparison cannot reach p &lt; 0.10.</li>
 <li>Withdrawn or corrected during the study: the early-timing account of label reading; "a confidence regulator" (now amplifier);
 a single-seed "20% less competition" (now a non-significant trend); "steering works only late"; "label-following comes from
-training data" (now: which training can create it); "same behaviour, different mechanisms" (now: same edge class, different
-layers); the planned "position vs token order" test (an identity by construction, not evidence).</li>
+training data" (now: which training can create it); "same behaviour, different mechanisms" (now: the same edge classes in different
+layers, partly entangled with normal answering in some seeds); "a redundant label is not used" (wrong: 4 of 6 seeds use it); the planned "position vs token order" test (an identity by construction, not evidence).</li>
 </ul>""")
 
 sections.append(f"""<h2>9 · Reproduction and cost</h2>
