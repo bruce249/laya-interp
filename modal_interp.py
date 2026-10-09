@@ -512,6 +512,76 @@ def phase3_run(model: str = "laya") -> dict:
     return {"model": model, "ok": True}
 
 
+@app.function(cpu=1, memory=2048, volumes=VOLUMES, timeout=600)
+def llm_usage() -> dict:
+    import json
+    import pathlib
+    from collections import defaultdict
+
+    tot = defaultdict(lambda: {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0})
+    for f in pathlib.Path("/store/llm_cache").glob("*.json"):
+        d = json.loads(f.read_text())
+        u = d.get("usage") or {}
+        t = tot[d.get("model", "?")]
+        t["calls"] += 1
+        t["prompt_tokens"] += u.get("prompt_tokens", 0)
+        t["completion_tokens"] += u.get("completion_tokens", 0)
+    return dict(tot)
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=4 * 3600, env=HF_ENV, scaledown_window=60, memory=65536)
+def phase5_arm(regime: str, seed: int) -> dict:
+    from interp import phase5
+    from interp.runs import save
+
+    log = lambda s: print(s, flush=True)  # noqa: E731
+    tr = phase5.train_regime(regime, seed, log=log)
+    weights.commit()
+    store.commit()
+    store.reload()
+    ev = phase5.evaluate(tr["name"], log=log)
+    save(f"phase5/{tr['name']}", {"train": tr, "eval": ev})
+    store.commit()
+    return {"name": tr["name"], "ok": True}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=2 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def phase5_eval(name: str) -> dict:
+    from interp import phase5
+    from interp.runs import save
+
+    store.reload()
+    ev = phase5.evaluate(name, log=lambda s: print(s, flush=True))
+    save(f"phase5/{name}", {"train": None, "eval": ev})
+    store.commit()
+    return {"name": name, "ok": True}
+
+
+@app.function(cpu=4, memory=16384, volumes=VOLUMES, timeout=1800, env=HF_ENV)
+def phase5_dryrun() -> str:
+    import random
+
+    from laya.common import build_head
+
+    from interp import phase5
+    from interp.model import load_agent
+    from interp.retrain import build_items, train_rows
+
+    tok = load_agent("laya", device="cpu", eager_attn=False).tok
+    rows0 = train_rows(0)
+    out = []
+    for regime in phase5.REGIMES:
+        rng = random.Random(REGIME_SEED := 0)
+        rows = [dict(r, q=phase5.noul_q(r["q"], regime, rng)) if r["q"]["type"] == "noul" else r for r in rows0]
+        items, skipped = build_items(tok, rows, 512, 192)
+        noul = [it for it in items if it["q"]["t"] == "noul"]
+        ex = noul[0]
+        ids, markers, _ = build_head(tok, ex["q"], 192)
+        out.append(f"{regime}: items={len(items)} noul={len(noul)} skipped={skipped} labels={ex['q'].get('labels')} "
+                   f"crit={ex['q'].get('crit')} head='{tok.decode(ids[markers[0]:])}'")
+    return chr(10).join(out)
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -598,5 +668,15 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
                  phase3_run.spawn("multilingual"), phase3_run.spawn("typed")]
         for c in calls:
             print(c.get())
+    elif task == "llm_usage":
+        print(llm_usage.remote())
+    elif task == "phase5":
+        regimes = (paths or "semantic,neutral,random_mapping,mixture,planted").split(",")
+        calls = [phase5_arm.spawn(r, sd) for r in regimes for sd in (0, 1, 2)]
+        calls += [phase5_eval.spawn(n) for n in ("ctrl_rlcd", "ctrl_rlcd_s1", "ctrl_rlcd_s2")]
+        for c in calls:
+            print(c.get())
+    elif task == "p5dry":
+        print(phase5_dryrun.remote())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

@@ -61,13 +61,15 @@ def label_positions(tok, enc) -> list[int]:
     return pos
 
 
-def encode_item(agent, item, labels: dict, option_order=None, pad_tokens: int = 0, state=None):
+def encode_item(agent, item, labels: dict, option_order=None, pad_tokens: int = 0, state=None, criteria=None):
     text = state if state is not None else item["state"]
     if pad_tokens:
         pad_ids = agent.tok(PAD_SENTENCE, add_special_tokens=False)["input_ids"]
         reps = max(1, pad_tokens // len(pad_ids))
         text = PAD_SENTENCE * reps + text
     qdef = {"type": "noul", "instructions": item["question"], "labels": labels}
+    if criteria is not None:
+        qdef["criteria"] = criteria
     if option_order is not None:
         qdef["option_order"] = option_order
     enc = encode(agent, text, qdef, meta={"id": item["id"]})

@@ -135,6 +135,24 @@ Same architecture, init, budget and evaluation; only the label regime in the tra
 
 3 seeds each, if the budget allows. **Measure:** label-following and the [MASK] → label pathway strength. Run only if Phases 1–3 hold. This turns "not inevitable" into a causal statement about training data.
 
+**Frozen design, 2026-10-09 (before any run).**
+
+- **Common setup:** RLCD loss (laya's), ModernBERT-large init, the same 31,419 training items as the retrained controls, 2 epochs, seeds 0/1/2. Only the yes/no (noul) items change between regimes; the multiple-choice items are identical in every run.
+- **Regimes:**
+
+  | Regime | Labels | Option order | Option descriptions |
+  |---|---|---|---|
+  | R0 baseline (the existing 3 RLCD controls) | default "true/false" | fixed | default |
+  | R1 semantic | sampled per item from 6 meaningful pairs (true/false, yes/no, correct/incorrect, agree/disagree, valid/invalid, supported/unsupported), always correctly aligned | fixed | default |
+  | R2 neutral | sampled from meaningless symbol pairs | fixed | default |
+  | R3 random mapping | meaningful pairs, swapped on a random 50% of items, so the label word carries no information | fixed | default |
+  | R4 mixture | each item drawn from R1, R2 or R3 at random | fixed | default |
+  | R5 planted shortcut | meaningful pairs, correctly aligned | random | identical neutral text ("this option"), so the label word is the only cue to which option means "holds" |
+
+- **Primary metric:** yes/no label-following on BoolQ (main and held-out), RTE and MultiRC. Also reported: true/false and correct/incorrect swaps, a symbol control, normal-label accuracy, and label-following with the guard on (does the shortcut use the same direct [MASK] → label read?). Every model is also evaluated with neutral descriptions.
+- **Prediction:** R5 > R1 > R4 > R3 ≈ R2 ≈ R0.
+- **Stated limit:** this tests whether label semantics in the training data can create the shortcut; it does not reconstruct laya's own training set.
+
 ### Phase 6 · Literature, done properly (no compute, 1 day)
 
 Read in full and summarize the exact claims and setups of:
