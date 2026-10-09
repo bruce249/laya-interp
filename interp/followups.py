@@ -338,3 +338,82 @@ def fp32_only(agent, runner, log=print) -> dict:
     out = fp32_confirm(agent, runner, log)
     save("followups/fp32", out)
     return out
+
+
+# ----- C3 label guard through the official predict API -----
+
+
+def label_guard_eval(log=print) -> dict:
+    import laya
+
+    from . import data
+    from . import safety as sf
+    from .data import mc_query
+    from .label_guard import install
+    from .labels import LABELS
+    from .verify import QUESTIONS, STATES
+
+    plain = laya.load("convaiinnovations/laya", device="cuda")
+    guarded = laya.load("convaiinnovations/laya", device="cuda")
+    install(guarded)
+    out: dict = {"attn_impl": guarded.model.encoder.config._attn_implementation,
+                 "amp": bool(getattr(guarded, "amp_enabled", None))}
+
+    def ans(agent, state, qdef):
+        a = agent.predict_batch([state], {"q": qdef})[0]["answers"]["q"]
+        return a
+
+    def holds(agent, it, labels):
+        a = ans(agent, it["state"], {"type": "noul", "instructions": it["question"], "labels": labels})
+        return a["noul"]
+
+    sets = {"boolq_main": [i for i in data.load_jsonl("boolq.jsonl") if i["split"] == "main"],
+            "boolq_heldout": [i for i in data.load_jsonl("boolq.jsonl") if i["split"] == "heldout"],
+            "llm_c3": data.load_jsonl("c3_llm.jsonl")}
+    for sname, items in sets.items():
+        res = {}
+        for lname, (normal, swapped) in LABELS.items():
+            row = {}
+            for tag, agent in (("plain", plain), ("guard", guarded)):
+                pn = [holds(agent, it, normal) for it in items]
+                ps = [holds(agent, it, swapped) for it in items]
+                g = [it["gold"] for it in items]
+                an = [(p > 0.5) == bool(y) for p, y in zip(pn, g)]
+                aw = [(p > 0.5) == bool(y) for p, y in zip(ps, g)]
+                follow = [a and not b for a, b in zip(an, aw)]
+                row[tag] = {"acc_normal": sum(an) / len(an), "acc_swapped": sum(aw) / len(aw),
+                            "label_following": sum(follow) / max(1, sum(an))}
+            res[lname] = row
+            log(f"[guard] {sname} {lname}: plain {row['plain']} | guard {row['guard']}")
+        out[sname] = res
+
+    # side effects: choice must be identical; noul tasks with default labels should not get worse
+    mc = [it for it in __import__("interp.runs", fromlist=["mc_items"]).mc_items() if it["split"] == "heldout"][:300]
+    diffs = []
+    for it in mc:
+        st, q = mc_query(it, "generic")
+        a, b = ans(plain, st, q), ans(guarded, st, q)
+        diffs.append(max(abs(a["probabilities"][k] - b["probabilities"][k]) for k in a["probabilities"]))
+    out["choice_max_prob_diff"] = max(diffs)
+    nat = [r for r in data.load_jsonl("jb_natural.jsonl") if r["split"] == "heldout"]
+    inj = [r for r in data.load_jsonl("injection.jsonl") if r["split"] == "heldout"]
+    for name, rows, qd in (("jailbreak", nat, sf.JAILBREAK_Q), ("injection", inj, sf.INJECTION_Q)):
+        y = [r["label"] for r in rows]
+        pp = [ans(plain, r["text"], qd)["noul"] for r in rows]
+        pg = [ans(guarded, r["text"], qd)["noul"] for r in rows]
+        out[name] = {"plain_auroc": mt.auroc(np.array(pp), np.array(y)), "guard_auroc": mt.auroc(np.array(pg), np.array(y)),
+                     "plain_acc": float(np.mean([(p > 0.5) == bool(t) for p, t in zip(pp, y)])),
+                     "guard_acc": float(np.mean([(p > 0.5) == bool(t) for p, t in zip(pg, y)])),
+                     "decision_changes": float(np.mean([(a > 0.5) != (b > 0.5) for a, b in zip(pp, pg)]))}
+        log(f"[guard] {name}: {out[name]}")
+    noul_qs = [q for q in QUESTIONS if q["type"] == "noul"]
+    ch, tot = 0, 0
+    for st in STATES:
+        for q in noul_qs:
+            a, b = ans(plain, st, q)["noul"], ans(guarded, st, q)["noul"]
+            ch += (a > 0.5) != (b > 0.5)
+            tot += 1
+    out["preset_noul_decision_changes"] = ch / tot
+    log(f"[guard] choice max prob diff={out['choice_max_prob_diff']:.2e} preset noul changes={ch}/{tot}")
+    save("followups/label_guard", out)
+    return out

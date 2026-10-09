@@ -80,7 +80,7 @@ def train_arm(loss: str, epochs: int = 2, seed: int = 0, log=print) -> dict:
     ref = load_agent("laya", device="cpu", eager_attn=False)
     tok, cfg = ref.tok, copy.deepcopy(ref.cfg)
     del ref
-    rows = train_rows(seed)
+    rows = train_rows(0)          # same data for every seed; only training randomness varies
     items, skipped = build_items(tok, rows, cfg.get("max_len", 512), cfg.get("head_max_len", 192))
     log(f"[retrain {loss}] items={len(items)} skipped={skipped} ({time.time() - t0:.0f}s)")
     torch.manual_seed(seed)
@@ -93,7 +93,8 @@ def train_arm(loss: str, epochs: int = 2, seed: int = 0, log=print) -> dict:
     out_cfg.update({"temperature": [1.0, 1.0, 1.0], "temperature_by_options": {}, "model_name": f"ctrl-{loss}",
                     "training": {"loss": loss, "epochs": epochs, "items": len(items), "fixed_option_order": True,
                                  "init": cfg["encoder"], "seed": seed}})
-    path = CKPT / f"ctrl_{loss.replace('-', '_')}"
+    suffix = "" if seed == 0 else f"_s{seed}"
+    path = CKPT / f"ctrl_{loss.replace('-', '_')}{suffix}"
     save_checkpoint(model, tok, out_cfg, str(path))
     log(f"[retrain {loss}] saved {path} loss history={history} ({time.time() - t0:.0f}s)")
     return {"loss": loss, "history": history, "items": len(items), "path": str(path),

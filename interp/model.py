@@ -17,7 +17,7 @@ def load_agent(name: str = "laya", device: str = "cuda", fp32: bool = True, eage
     """laya.Agent on the eager backend, AMP off when `fp32`, eager encoder attention when `eager_attn`."""
     import laya
 
-    spec = CHECKPOINTS[name]
+    spec = CHECKPOINTS.get(name) or dict(repo=f"/store/ckpt/{name}", subfolder=None)
     kwargs = {"device": device}
     if spec["subfolder"]:
         kwargs["subfolder"] = spec["subfolder"]

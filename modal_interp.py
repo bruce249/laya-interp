@@ -371,14 +371,15 @@ def fp32_only() -> str:
 
 
 @app.function(gpu="H100", volumes=VOLUMES, timeout=5 * 3600, env=HF_ENV, scaledown_window=60, memory=65536)
-def retrain_arm(loss: str = "soft-ce") -> dict:
+def retrain_arm(loss: str = "soft-ce", seed: int = 0) -> dict:
     from interp import retrain
 
-    out = retrain.train_arm(loss, log=lambda s: print(s, flush=True))
+    out = retrain.train_arm(loss, seed=seed, log=lambda s: print(s, flush=True))
     weights.commit()
     store.commit()
     store.reload()
-    ev = retrain.evaluate_arm(f"ctrl_{loss.replace('-', '_')}", log=lambda s: print(s, flush=True))
+    suffix = "" if seed == 0 else f"_s{seed}"
+    ev = retrain.evaluate_arm(f"ctrl_{loss.replace('-', '_')}{suffix}", log=lambda s: print(s, flush=True))
     store.commit()
     return {"train": out, "eval_keys": list(ev)}
 
@@ -394,6 +395,15 @@ def sae_run() -> dict:
     out = sae.run(agent, Runner(agent), log=lambda s: print(s, flush=True))
     store.commit()
     return {"wall_s": out["wall_s"]}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=4 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def label_guard() -> str:
+    from interp import followups as fu
+
+    fu.label_guard_eval(log=lambda s: print(s, flush=True))
+    store.commit()
+    return "ok"
 
 
 @app.local_entrypoint()
@@ -452,5 +462,11 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
         calls = [retrain_arm.spawn("soft-ce"), retrain_arm.spawn("rlcd"), sae_run.spawn()]
         for c in calls:
             print(c.get())
+    elif task == "seeds":
+        calls = [retrain_arm.spawn(loss, seed) for loss in ("soft-ce", "rlcd") for seed in (1, 2)]
+        for c in calls:
+            print(c.get())
+    elif task == "label_guard":
+        print(label_guard.remote())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))
