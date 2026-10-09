@@ -582,7 +582,8 @@ sections.append("<h2>5 · C4: jailbreak and injection (supporting)</h2>" + f"""
 <li>Detection AUROC {T4['natural_baseline']['auroc']:.3f} on natural jailbreaks, {T4['injection_baseline']['auroc']:.3f} on injections.</li>
 <li>A linear probe reads the attack from layer {T4['decodable_layer_state']} at {T4['probe_natural_state'][0]['acc']:.2f}; patching shows the
 decision carried by the prompt until layer {T4['state_patch_last_layer_ge_0.5']}, relayed by question tokens, and completed in the
-head layers: the early-decodable, late-decisive pattern reported for decoder LLMs (Wen et al. 2026), here in an encoder.</li>
+head layers. This parallels the early-decodable, late-decisive pattern Wen et al. (2026) report for prompt-injection compliance in
+decoder LLMs. Unlike their late layer, which tracks intent and resists obfuscation, laya's decision is sensitive to surface style (next items).</li>
 <li>Adding the jailbreak direction at the layer-{best['layer']} [MASK]s raises benign prompts flagged from
 {pct(STEER['base']['benign_flagged'])} to {pct(best['benign_flagged'])} with an unrelated question at {pct(best['urgency_flagged'])}.</li>
 <li>After gpt-5.6-terra removed only the override from {LLM['counterfactuals']['n']} flagged jailbreaks, laya still flags
@@ -609,16 +610,17 @@ Answers traces GPT-2's preference for "A" to MLP value vectors. Set-Based Prompt
 and masking attention; its ablation on 20 MMLU questions found the mask more important than positions in decoders, the opposite of
 what blocking attention alone does in laya. Label Words are Anchors studies in-context demonstration labels in decoders, a different
 setting from answer-option labels. Confidence Regulation Neurons describes entropy neurons that are explicitly not a temperature;
-laya's late MLPs are. Wen et al. (2026, read at abstract level) report early-decodable, late-decisive prompt-injection compliance
-in decoders. Different seeds learning different circuits is known (A Toy Model of Universality). A BERT cross-encoder BM25 circuit
+laya's late MLPs are. Wen et al. (2026) report early-decodable, late-decisive prompt-injection compliance in five decoder LLMs,
+with a late representation that tracks intent; laya shares the timing, but not the robustness to surface style. Different seeds
+learning different circuits is known (A Toy Model of Universality); our retrained seeds share the edge class but differ in layers. A BERT cross-encoder BM25 circuit
 is the closest encoder precedent found. Full notes and the search log are in <code>LITERATURE_NOTES.md</code>.</p>""")
 
 sections.append("""<h2>8 · Limitations and corrections</h2><ul>
 <li>Laya was not built for multiple-choice QA (its model card notes near-chance zero-shot performance on typed decisions);
 C1 and C2 describe how it handles options, not tuned QA behaviour.</li>
 <li>Order-invariance is guaranteed by construction in the shared-position cells; positions alone could not be tested.</li>
-<li>The multi-token extended guard is exploratory; contradicting passages and jailbreak rewrites were checked by a second model,
-not by hand; Wen et al. was read at abstract level only; SAE feature labels were contaminated and are not used.</li>
+<li>The extended guard was designed on earlier sets and has passed one confirmatory test (the frozen benchmark); contradicting
+passages and jailbreak rewrites were checked by a second model, not by hand; SAE feature labels were contaminated and are not used.</li>
 <li>Human audits of the GPT-written items, contradicting edits, jailbreak rewrites and style pairs are prepared
 (<code>audit/</code>) but not yet done.</li>
 <li>The all-layer guard results on retrained models are exploratory (added after seeing the local-guard results); the RoBERTa

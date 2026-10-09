@@ -51,7 +51,8 @@ def noul_q(base_q: dict, regime: str, rng: random.Random) -> dict:
     return q
 
 
-def train_regime(regime: str, seed: int, log=print, encoder: str | None = None, tag: str = "p5") -> dict:
+def train_regime(regime: str, seed: int, log=print, encoder: str | None = None, tag: str = "p5",
+                 encoder_lr: float | None = None) -> dict:
     import torch
     from laya.common import build_model
     from laya.train import TrainConfig, save_checkpoint, train_model
@@ -79,13 +80,14 @@ def train_regime(regime: str, seed: int, log=print, encoder: str | None = None, 
     torch.manual_seed(seed)
     model = build_model(cfg, pretrained=True)
     config = TrainConfig(epochs=2, micro_batch=32, grad_accum=2, loss="rlcd", seed=seed, log_every=400,
-                         shuffle_options=("noul",) if regime in SHUFFLED else ())
+                         shuffle_options=("noul",) if regime in SHUFFLED else (),
+                         **({"encoder_lr": encoder_lr} if encoder_lr else {}))
     history = train_model(model, tok, items, config, torch.device("cuda"),
                           cfg.get("max_len", 512), cfg.get("head_max_len", 192))
     out_cfg = dict(cfg)
     out_cfg.update({"temperature": [1.0, 1.0, 1.0], "temperature_by_options": {}, "model_name": f"{tag}-{regime}",
                     "training": {"loss": "rlcd", "regime": regime, "seed": seed, "epochs": 2, "items": len(items),
-                                 "encoder": cfg["encoder"]}})
+                                 "encoder": cfg["encoder"], "encoder_lr": config.encoder_lr}})
     name = f"{tag}_{regime}_s{seed}"
     save_checkpoint(model, tok, out_cfg, str(CKPT / name))
     log(f"[p5 {regime} s{seed}] saved, loss={history} ({time.time() - t0:.0f}s)")

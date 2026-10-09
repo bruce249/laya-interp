@@ -38,7 +38,7 @@ def swap(labels):
 # ----------------------------------------------------------------- data (P1)
 
 def build_benchmark(tok, careful: str, bulk: str, seed: int = 21, n_each: int = 300, max_state: int = 300,
-                    log=print) -> list[dict]:
+                    log=print, exclude=(), split: str = "confirm2") -> list[dict]:
     from datasets import load_dataset
 
     from . import data
@@ -48,19 +48,23 @@ def build_benchmark(tok, careful: str, bulk: str, seed: int = 21, n_each: int = 
     items = []
     rows = [r for r in load_dataset("nyu-mll/glue", "mnli", split="validation_matched") if r["label"] in (0, 2)]
     rng.shuffle(rows)
+    exclude = set(exclude)
+    rows = [r for r in rows if f"MNLI:{r['idx']}" not in exclude]
     for r in rows[:n_each]:
         hyp = r["hypothesis"].strip().rstrip(".")
         items.append({"id": f"MNLI:{r['idx']}", "source": "MNLI", "state": r["premise"],
                       "question": f"Does the text imply that {hyp[:1].lower() + hyp[1:]}?",
-                      "gold": int(r["label"] == 0), "split": "confirm2"})
+                      "gold": int(r["label"] == 0), "split": split})
     rows = list(load_dataset("nyu-mll/glue", "qnli", split="validation"))
     rng.shuffle(rows)
     k = 0
     for r in rows:
+        if f"QNLI:{r['idx']}" in exclude:
+            continue
         q = r["question"].strip()
         items.append({"id": f"QNLI:{r['idx']}", "source": "QNLI", "state": r["sentence"],
                       "question": f"Does the text answer the question \"{q}\"?",
-                      "gold": int(r["label"] == 0), "split": "confirm2"})
+                      "gold": int(r["label"] == 0), "split": split})
         k += 1
         if k >= n_each:
             break
@@ -138,6 +142,8 @@ def interventions(runner) -> dict:
         # exploratory, post hoc (added after P3): the same edges blocked in every layer
         "guard_all_layers": [(allL, edge_fn("label"))],
         "guard_extended_all_layers": [(allL, edge_fn("label")), (allL, edge_fn("label_ext"))],
+        # Phase 9 matched control for the all-layer guard (frozen before the fresh benchmark was evaluated)
+        "random_edges_all_layers": [(allL, edge_fn("random_option"))],
     }
 
 

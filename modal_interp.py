@@ -645,15 +645,15 @@ def p4_run(model: str) -> dict:
 
 
 @app.function(gpu="H100", volumes=VOLUMES, timeout=4 * 3600, env=HF_ENV, scaledown_window=60, memory=65536)
-def p8_train(regime: str, seed: int, encoder: str = "") -> dict:
+def p8_train(regime: str, seed: int, encoder: str = "", encoder_lr: float = 0.0) -> dict:
     from interp import data, phase5, phase8
     from interp.hooks import Runner
     from interp.model import load_agent
     from interp.runs import save
 
     log = lambda s: print(s, flush=True)  # noqa: E731
-    tag = "p8rob" if encoder else "p5"
-    tr = phase5.train_regime(regime, seed, log=log, encoder=encoder or None, tag=tag)
+    tag = ("p9rob" if encoder_lr else "p8rob") if encoder else "p5"
+    tr = phase5.train_regime(regime, seed, log=log, encoder=encoder or None, tag=tag, encoder_lr=encoder_lr or None)
     weights.commit()
     store.commit()
     store.reload()
@@ -711,6 +711,47 @@ def p8_guardall(name: str) -> dict:
                                     lambda s: print(s, flush=True),
                                     inter_names=["none", "guard", "guard_all_layers", "guard_extended_all_layers"])
     save(f"phase8/guardall_{name}", out)
+    store.commit()
+    return {"name": name, "ok": True}
+
+
+@app.function(cpu=4, memory=16384, volumes=VOLUMES, timeout=3600, secrets=[OPENAI],
+              env=HF_ENV | {"LLM_BULK": "gpt-5.6-luna", "LLM_CAREFUL": "gpt-5.6-terra"})
+def p9_data() -> dict:
+    import os
+
+    from interp import data, phase8
+    from interp.model import load_agent
+
+    path = data.DATA / "conflict_bench2.jsonl"
+    if not path.exists():
+        used = {it["id"] for it in data.load_jsonl("conflict_bench.jsonl")}
+        tok = load_agent("laya", device="cpu", eager_attn=False).tok
+        items = phase8.build_benchmark(tok, os.environ["LLM_CAREFUL"], os.environ["LLM_BULK"], seed=22,
+                                       exclude=used, split="confirm3", log=lambda s: print(s, flush=True))
+        assert not used & {it["id"] for it in items}
+        data.save_jsonl("conflict_bench2.jsonl", items)
+        store.commit()
+    items = data.load_jsonl("conflict_bench2.jsonl")
+    return {"n": len(items), "n_contra": sum(1 for it in items if it.get("contra_state")),
+            "sources": {s: sum(it["source"] == s for it in items) for s in ("MNLI", "QNLI")},
+            "gold_rate": sum(it["gold"] for it in items) / len(items), "sha256": phase8.freeze(items)}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=3 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def p9_bench(name: str) -> dict:
+    from interp import data, phase8
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    store.reload()
+    agent = load_agent(name, device="cuda")
+    out = phase8.evaluate_benchmark(agent, Runner(agent), data.load_jsonl("conflict_bench2.jsonl"), name,
+                                    lambda s: print(s, flush=True),
+                                    inter_names=["none", "guard", "guard_all_layers", "guard_extended_all_layers",
+                                                 "random_edges_all_layers"])
+    save(f"phase9/bench2_{name}", out)
     store.commit()
     return {"name": name, "ok": True}
 
@@ -846,5 +887,18 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
             calls = [p8_guardall.spawn(n) for n in names[i:i + 10]]
             for c in calls:
                 print(c.get())
+    elif task == "p9data":
+        print(p9_data.remote())
+    elif task == "p9train":
+        jobs = [("dose_d1", sd, "", 0.0) for sd in (3, 4, 5)]
+        jobs += [(r, sd, "FacebookAI/roberta-large", 1e-5) for r in ("planted", "baseline") for sd in (0, 1, 2)]
+        calls = [p8_train.spawn(*j) for j in jobs]
+        for c in calls:
+            print(c.get())
+    elif task == "p9bench":
+        names = ["laya", "typed", "multilingual"] + [f"p5_planted_s{i}" for i in range(6)]
+        calls = [p9_bench.spawn(n) for n in names]
+        for c in calls:
+            print(c.get())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

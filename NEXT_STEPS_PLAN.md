@@ -353,3 +353,43 @@ Shuffled noul option order in every arm; same data, loss (RLCD), init and budget
   - Baseline s0/s1/s2: 0.3 / 42.1 / 10.8%.
   - Did not learn (BoolQ ≈ 0.63–0.64, majority-class bench accuracy): baseline s0, baseline s2 and planted s1.
   - This is a partial replication; no learning-rate retune was done.
+
+# Phase 9 · Follow-ups to Phase 8 (frozen 2026-10-10, before any run)
+
+## Q1 · All-layer guard, confirmatory (fresh benchmark)
+
+- **Data:** `conflict_bench2.jsonl`.
+  - 300 MNLI validation-matched + 300 QNLI validation items, drawn with seed 22.
+  - Excludes every id in `conflict_bench.jsonl`.
+  - Contradicting edits are made the same way as before.
+  - Frozen and hashed before any evaluation.
+- **Models:** laya, typed, multilingual, and planted s0–s5.
+- **Interventions:**
+  - `none`;
+  - `guard` (local layers);
+  - `guard_all_layers`;
+  - `guard_extended_all_layers`;
+  - `random_edges_all_layers`, a new matched control: the same number of random option-text edges, blocked in every layer.
+- **Prediction:**
+  - With `guard_all_layers`, yes/no label-following is ≤ 10% in laya, typed and multilingual, and in at least 5 of 6 planted seeds.
+  - `random_edges_all_layers` stays within 10 points of `none` in every model.
+
+## Q2 · D1 (label redundant with informative text): seeds 3–5
+
+- **Runs:** same recipe, evaluated on `conflict_bench.jsonl` as in P3.
+- **Report:** all 6 seeds individually, plus exact permutation tests of D1 vs baseline and D1 vs planted (6 vs 6 each).
+- **Prediction:** no directional prediction. The question is how often a redundant label gets used.
+
+## Q3 · RoBERTa-large rerun with a lower encoder learning rate
+
+- **Change:** `encoder_lr` = 1e-5 instead of 2.5e-5. laya's trainer has no warmup, and 2.5e-5 is tuned for ModernBERT. Everything else is unchanged.
+- **Runs:** planted and baseline, seeds 0–2.
+- **"Learned" criterion, fixed now:** BoolQ held-out accuracy ≥ 0.70. Every run is reported, including those that fail the criterion.
+- **Prediction:** among runs that learned, planted label-following is higher than baseline, and the all-layer [MASK]→label block reduces planted runs to ≤ 10%.
+
+**Q1 benchmark frozen, 2026-10-10, before any evaluation.** `data/conflict_bench2.jsonl`:
+
+- 600 items (MNLI 300, QNLI 300), with no overlap with `conflict_bench.jsonl` (asserted);
+- 524 with a verified contradicting edit;
+- gold "holds" rate 0.478;
+- SHA-256 `05c0217cbd11f7205f7bba88f15c1ae242e4155019a8d3f06e7f1b90de87fa48`.
