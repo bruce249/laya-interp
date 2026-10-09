@@ -188,7 +188,7 @@ def build(costs: dict | None = None) -> str:
                     label=f"L{layer}", marker="o", markersize=3)
             ax.plot([float(a) for a in al], [r["random_dose"][a]["log_scale"] for a in al], color=SERIES[i % 8],
                     linestyle=":", linewidth=1)
-        ax.set_xlabel("steering α (σ)")
+        ax.set_xlabel("dose (fraction of mean [MASK] residual norm)")
         ax.set_ylabel("log scale change")
         ax.set_title("Norm direction dose response (dotted: random)")
         ax.legend(fontsize=8)

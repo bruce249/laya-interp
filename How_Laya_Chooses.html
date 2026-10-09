@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Laya Chooses</title>
+<style>
+  :root { --bg:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --rule:#e2e1dc; --accent:#2a78d6; --code:#efeee9; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink2:#c3c2b7; --rule:#383835; --accent:#3987e5; --code:#262624; }
+  }
+  :root[data-theme="dark"] { --bg:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink2:#c3c2b7; --rule:#383835; --accent:#3987e5; --code:#262624; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width:900px; margin:0 auto; padding:32px 16px 64px; }
+  h1 { font-size:2rem; line-height:1.2; margin:0 0 4px; }
+  h2 { font-size:1.35rem; margin:40px 0 8px; padding-top:16px; border-top:1px solid var(--rule); }
+  h3 { font-size:1.1rem; margin:28px 0 8px; }
+  p { margin:8px 0; }
+  .byline { color:var(--ink2); font-size:.95rem; margin-bottom:20px; }
+  .lead { font-size:1.08rem; }
+  a { color:var(--accent); }
+  code { background:var(--code); padding:1px 5px; border-radius:4px; font-size:.9em; }
+  .table-wrap { overflow-x:auto; margin:12px 0; background:var(--surface); border:1px solid var(--rule); border-radius:8px; }
+  table { border-collapse:collapse; width:100%; font-size:.92rem; }
+  th, td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--rule); }
+  th { color:var(--ink2); font-weight:600; white-space:nowrap; }
+  tr:last-child td { border-bottom:none; }
+  ul { padding-left:22px; }
+  li { margin:6px 0; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>How Laya Chooses</h1>
+<p class="byline">2026-10-09 · Vignesh</p>
+<p class="lead">Laya's options do compete, but order flips come from positional encoding, not competition; confidence is set by three late MLPs; and noul answers follow semantic label words because the [MASK] reads its label in local layers before passage evidence arrives.</p>
+
+<h2 id="at-a-glance">At a glance</h2>
+<p>C3 and C4 held outright, C1 and C2 held in a narrower form than stated, C5 held partly; the one clean null is a confidence <em>direction</em> in the residual stream. All headline numbers replicate in fp32 and on held-out data.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Claim</th><th>Verdict</th><th>Key number</th></tr></thead>
+<tbody>
+<tr><td>C1 Options compete</td><td>Yes, distributed</td><td>Mean change of another option's logit when one option is blanked: 0.37</td></tr>
+<tr><td>C1 Order flips come from competition</td><td>No: from positions</td><td>Flips stay at 28.3% with options blocked from each other; 0.0% when blocked options also share positions</td></tr>
+<tr><td>C1-Control (parallel layout)</td><td>Confirms the split</td><td>Blocking option attention halves competition, leaves flips</td></tr>
+<tr><td>C2 Choice and confidence separable</td><td>At component level</td><td>Ablating MLPs L22, L26, L27: confidence ×0.48, 96% of answers kept</td></tr>
+<tr><td>C2 at direction or feature level</td><td>No</td><td>Steering a confidence direction = random; SAE features entangled</td></tr>
+<tr><td>C3 Label vs state competition</td><td>Yes, semantic</td><td>yes/no labels swapped → 96% follow the label; A/B → 3%</td></tr>
+<tr><td>C4 Jailbreak: decodable early, decided late</td><td>Yes</td><td>Probe 92% at layer 0; decision fixed after layer 15–28</td></tr>
+<tr><td>C5 Objective matters</td><td>Partly</td><td>3 seeds: RLCD 16% less competition (p = 0.09, a trend); architecture effects identical</td></tr>
+</tbody></table></div>
+
+<h2 id="c1">C1 · Option competition vs order</h2>
+<p>Competition is real but does not cause order flips. Flips come from where an option sits (RoPE positions); competition flows option-text → option-text, then into the [MASK].</p>
+<p>Setup: 2,000 multiple-choice items (ARC, CommonsenseQA, QASC, 3–5 options), cast as laya <code>choice</code> questions. Competition M = change in option i's centred logit when option j's tokens are replaced by length-matched filler.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Condition (laya, fp32)</th><th>Accuracy</th><th>Reversal flips</th><th>Mean abs(M)</th></tr></thead>
+<tbody>
+<tr><td>Trained (sequential)</td><td>0.453</td><td>29.6%</td><td>0.374</td></tr>
+<tr><td>Options cannot see each other</td><td>0.414</td><td>28.3%</td><td>0.181</td></tr>
+<tr><td>Options blocked + shared positions (shipped parallel)</td><td>0.408</td><td>0.0%</td><td>0.175</td></tr>
+<tr><td>Fully masked parallel</td><td>0.346</td><td>28.6%</td><td>0.000</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Not a slot bias.</strong> Slot index explains 0.2% of order-induced variance; neighbour strength correlates at r ≈ 0.</li>
+<li><strong>Route.</strong> Patching shows option j's content leaving its own span by layer 12, peaking in option i's text tokens at layer 16 (recovery 0.53), and reaching [MASK]i at layers 17–22 (0.28 → 0.84). The two head layers add nothing.</li>
+<li><strong>No small circuit.</strong> Blocking cross-option attention in the top 5, 10 or 20 heads moves M from 0.371 only to 0.36, no more than random heads. The top competition heads (L0 h5–7, L4 h6–7) are shared with smolaya, likely from the ModernBERT init.</li>
+<li><strong>smolaya</strong> shows the same split at half strength: M 0.194, flips 17.7% → 1.0% with options blocked and positions shared. Shared positions were not tested without the attention block; an order-blind-RoPE-only run cut flips to 8% but collapsed accuracy to chance, so it is not used as evidence.</li>
+</ul>
+
+<h2 id="c2">C2 · Choice vs confidence</h2>
+<p>Three late MLPs act as a confidence amplifier: removing them halves the logit scale and fixes most of the miscalibration without changing answers. No compact set controls the choice itself.</p>
+<p>Choice = direction of the centred logit vector; confidence = its length. Components were mean-ablated one at a time, then chosen greedily.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Ablation (laya, fp32)</th><th>Confidence scale</th><th>Answers kept</th><th>Calibration error (ECE)</th><th>AUROC of margin</th></tr></thead>
+<tbody>
+<tr><td>None</td><td>×1.00</td><td>100%</td><td>0.19</td><td>0.63</td></tr>
+<tr><td>MLPs L22, L26, L27</td><td>×0.48</td><td>95.7% (held-out 96.6%)</td><td>0.076</td><td>0.63</td></tr>
+<tr><td>10 components, first pass</td><td>×0.29</td><td>91.5%</td><td>0.061</td><td>0.64</td></tr>
+<tr><td>Greedy "choice" heads</td><td>≈×1.0</td><td>90.6%</td><td>0.20</td><td>0.63</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Information vs scale.</strong> AUROC is unchanged, so the amplifier adds sharpness, not knowledge of which answer is right.</li>
+<li><strong>Timing.</strong> The choice direction stabilises by layer 22; in the direct lens the norm is only half its final size at layer 25 and jumps in the head layers.</li>
+<li><strong>Overconfidence is input-dependent.</strong> The best temperature rises from 1.8 to 3.0 across logit-norm quintiles and is 4.8 on ARC-Challenge vs 2.0 on ARC-Easy, so one global temperature cannot fix it.</li>
+<li><strong>Nulls.</strong> A residual direction that predicts confidence (r ≈ 0.7) changes it no more than a random direction when steered. The 3-MLP set does not shrink jailbreak confidence (ratio 1.03); only the 10-component set did (0.36).</li>
+</ul>
+
+<h2 id="c3">C3 · Label-following</h2>
+<p>When the label word disagrees with the option it sits on, laya follows the word, and only for meaningful words. The [MASK] reads its label in local layers 10–14; passage evidence arrives at layers 21–23. Cutting one attention edge removes the failure.</p>
+<p>Test: noul questions where each option's label word is swapped ("true: no, the statement does not hold"). A model reading the passage is unaffected; a model reading the label word picks the option the passage contradicts.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Labels (BoolQ, 700 items, fp32)</th><th>Accuracy normal → swapped</th><th>Follows the label</th></tr></thead>
+<tbody>
+<tr><td>yes / no</td><td>0.759 → 0.246</td><td>96%</td></tr>
+<tr><td>true / false</td><td>0.756 → 0.581</td><td>39%</td></tr>
+<tr><td>A / B</td><td>0.771 → 0.763</td><td>3%</td></tr>
+<tr><td>◇ / △</td><td>0.770 → 0.764</td><td>4%</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Replicated</strong> on 300 held-out BoolQ items (42% for true/false) and on ~680 fresh items written by gpt-5.6-luna and verified by gpt-5.6-terra (96% yes/no, 60% true/false, 1–3% symbols).</li>
+<li><strong>Distance.</strong> Pushing the passage 256 tokens further from the [MASK]s raises true/false label-following from 39% to 77%; A/B stays flat.</li>
+<li><strong>Fix.</strong> Blocking [MASK] → own-label attention in local layers only drops label-following to 4% (held-out 3%, LLM items 4%) with normal accuracy unchanged or higher (0.785 → 0.811 on LLM items). The same block in global or head layers does nothing.</li>
+</ul>
+
+<h3 id="label-guard">The fix as a drop-in patch</h3>
+<p>Installed on a stock <code>laya.load</code> agent (default SDPA attention, bf16), the label guard removes label-following through the official <code>predict</code> API. It blocks noul [MASK]s from their label words in local layers only.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Data</th><th>Label-following, plain → guard</th><th>Accuracy, normal labels, plain → guard</th></tr></thead>
+<tbody>
+<tr><td>BoolQ yes/no</td><td>95.9% → 1.3%</td><td>0.759 → 0.756</td></tr>
+<tr><td>BoolQ true/false</td><td>39.5% → 4.1%</td><td>0.753 → 0.759</td></tr>
+<tr><td>Held-out BoolQ yes/no</td><td>96.5% → 1.8%</td><td>0.760 → 0.753</td></tr>
+<tr><td>GPT-written items yes/no</td><td>96.3% → 3.8%</td><td>0.782 → 0.803</td></tr>
+<tr><td>GPT-written items true/false</td><td>61.3% → 4.7%</td><td>0.783 → 0.812</td></tr>
+</tbody></table></div>
+<p>Costs: choice questions are bit-identical; jailbreak AUROC falls 0.940 → 0.919 (1.8% of decisions change); injection AUROC 0.898 → 0.870 (no decisions change); 4 of 80 preset-style noul decisions change. Code: <code>interp/label_guard.py</code>.</p>
+
+<h2 id="c4">C4 · Jailbreak, injection and Hindi</h2>
+<p>As in LLMs, a jailbreak is decodable from layer 0 but decided late. In laya the decision travels prompt → question tokens → [MASK], and it keys on jailbreak style more than on the override instruction itself.</p>
+<ul>
+<li><strong>Baselines.</strong> Jailbreak AUROC 0.94 on 900 held-out natural prompts; injection AUROC 0.87 (deepset).</li>
+<li><strong>Decodable vs decisive.</strong> A linear probe reads the label at 92% from layer 0 (shuffled-label control near chance). Patching jailbreak-run activations into the control run recovers the decision from prompt tokens only through layer 15; question tokens relay it at layers 14–20 (recovery up to 0.79); the [MASK] holds only about 0.4 until the first head layer completes it.</li>
+<li><strong>Steering depends on the layer.</strong> Adding the jailbreak direction at the layer-20 [MASK]s raises benign prompts flagged from 23% to 61%, with an unrelated urgency question at 3% and multiple-choice accuracy unchanged. Subtracting it at the layer-12 prompt tokens lowers flagged jailbreaks from 98.5% to 72%. At layer 8 neither direction had a useful effect.</li>
+<li><strong>Style over instruction.</strong> gpt-5.6-terra rewrote 145 flagged jailbreaks to remove only the override; laya still flags 82% of them (log-odds drop 7.7 but stay positive).</li>
+<li><strong>Shared signal.</strong> Jailbreak and injection directions have cosine 0.71.</li>
+<li><strong>Hindi.</strong> laya-multilingual flags 52% of Hindi-translated jailbreaks vs 8.5% of controls. The English-fit direction barely reads Hindi (AUROC 0.56) or steers it, but projecting it out drops Hindi detection from 52% to 8.5%: necessary, not sufficient.</li>
+</ul>
+
+<h2 id="c5">C5 · Training objective and SAE features</h2>
+<p>The position-driven order effect and the late-MLP confidence amplifier appear in fresh models trained with either objective, so they come from the architecture and layout. Laya's label-following does not: neither control shows it, so it comes from laya's training data.</p>
+<p>Two controls, same ModernBERT-large init, same 31,419 training items (ARC, CSQA, QASC and BoolQ train splits), fixed option order, 2 epochs; only the loss differs. Each arm was trained with 3 seeds; the table shows seed 0.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Model</th><th>Accuracy</th><th>Reversal flips</th><th>Flips, shared positions</th><th>ECE</th><th>Mean abs(M)</th><th>Follows yes/no label</th></tr></thead>
+<tbody>
+<tr><td>Control, cross-entropy</td><td>0.713</td><td>13.3%</td><td>0.8%</td><td>0.125</td><td>0.433</td><td>5%</td></tr>
+<tr><td>Control, RLCD (laya's loss)</td><td>0.690</td><td>14.9%</td><td>0.7%</td><td>0.100</td><td>0.345</td><td>0.3%</td></tr>
+<tr><td>laya</td><td>0.456</td><td>29.6%</td><td>0.0%</td><td>0.192</td><td>0.374</td><td>96%</td></tr>
+<tr><td>smolaya</td><td>0.548</td><td>17.7%</td><td>1.0%</td><td>0.057</td><td>0.194</td><td>not run</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Objective.</strong> Over 3 seeds, RLCD has 16% less competition than CE (mean abs(M) 0.375 ± 0.036 vs 0.446 ± 0.041, Welch p = 0.09) and lower calibration error (0.103 vs 0.129, p = 0.19). Both are trends, not significant. Accuracy (0.695 vs 0.709), reversal flips (15.0% vs 14.4%) and label-following (4% vs 4%) do not differ.</li>
+<li><strong>Amplifier.</strong> Greedy search finds a late-MLP confidence set in all 6 control models; every set contains layer 22 and the first head layer's MLP (index 28). Across all 6, blocking option attention leaves 15–17% flips and adding shared positions brings them under 2%.</li>
+<li><strong>SAE.</strong> A TopK SAE (16,384 latents, k = 32) on 201k [MASK] vectors keeps 95% (layer 21) and 99% (layer 28) of answers when it replaces the real activations. The top-25 choice and confidence features overlap 11–15 of 25, and ablating the "choice" features also shrinks confidence. Choice and confidence are not separate features; they separate only at the component level.</li>
+</ul>
+
+<h2 id="related-work">Related work</h2>
+<p>The ideas exist for decoder LLMs; what is new here is the encoder decision-model setting, the C1 contrast, the C3 timing race and fix, and the controlled retrain.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Our result</th><th>Closest prior work</th><th>Difference</th></tr></thead>
+<tbody>
+<tr><td>C1 order flips are positional</td><td><a href="https://arxiv.org/abs/2308.11483">Pezeshkpour &amp; Hruschka 2023</a>; <a href="https://arxiv.org/abs/2309.03882">Zheng et al. 2023</a>; biased heads in GPT-2 (<a href="https://arxiv.org/abs/2405.03205">Anchored Answers</a>); <a href="https://arxiv.org/abs/2406.06581">Set-Based Prompting</a> shares positions and masks attention</td><td>In their LLM ablations the attention mask removed more order dependency than positions; in laya blocking attention alone leaves flips at 28%</td></tr>
+<tr><td>C2 confidence amplifier</td><td><a href="https://arxiv.org/abs/2406.16254">Confidence Regulation Neurons</a> (entropy neurons in LLMs)</td><td>Same idea in an encoder decision head, localized to late MLPs, present under both training losses</td></tr>
+<tr><td>C3 label-following</td><td><a href="https://arxiv.org/abs/2303.03846">Wei et al. 2023</a> (semantic priors on labels); <a href="https://arxiv.org/abs/2305.14160">Label Words are Anchors</a></td><td>Adds the label-vs-evidence timing race, a one-edge fix, and evidence that it comes from training data</td></tr>
+<tr><td>C4 decodable early, decided late</td><td><a href="https://arxiv.org/abs/2609.37737">Wen et al. 2026, arXiv 2609.37737</a></td><td>Replicated in an encoder classifier; decision relayed through question tokens</td></tr>
+</tbody></table></div>
+<p>These were found by web search on 2026-10-09; the papers were not all read in full.</p>
+
+<h2 id="caveats">Caveats and deviations from the plan</h2>
+<ul>
+<li><strong>Off-task casting.</strong> Laya was not built for multiple-choice QA (45% accuracy); C1 and C2 describe how it handles options, not a tuned QA behaviour.</li>
+<li><strong>Off-distribution controls.</strong> Masked-parallel conditions lower accuracy (0.35–0.41), so they bound dependence rather than cleanly ablate it.</li>
+<li><strong>C3 data.</strong> The plan's LLM-generated items were added after BoolQ, once the OpenAI key worked; both agree.</li>
+<li><strong>Rewritten jailbreaks</strong> were not checked by hand; some may still contain jailbreak framing.</li>
+<li><strong>SAE feature labels</strong> are contaminated (the labelling prompt showed whether each example won) and are not used as evidence. Its variance-explained figure is inflated by outlier dimensions; the answer-preservation check is the one that counts.</li>
+<li><strong>Retrain</strong> uses 3 seeds per arm, which is enough for the architecture findings but leaves the objective effects at trend level; it uses public data, not laya's training set.</li>
+<li><strong>Not done:</strong> "natural counterfactual" segment patching (the rewrites change token length), and the plan's browser-only workflow (runs were launched from the laptop CLI).</li>
+</ul>
+
+<h2 id="cost">Cost, data and reproduction</h2>
+<p>Total compute was $12.23 on Modal (all covered by free credits, $0 billed) against a $100 cap; OpenAI usage was about 160k prompt and 186k completion tokens.</p>
+<ul>
+<li><strong>Verified instrument.</strong> An explicit forward pass of laya's DecisionModel matches <code>predict</code> to 5e-5 on laya, smolaya and laya-multilingual; local attention window ±64 confirmed.</li>
+<li><strong>Code.</strong> <code>modal_interp.py</code> and the <code>interp/</code> package in the project repo (commits 1a02a62, f303893, 0b7c332).</li>
+<li><strong>Results</strong> live on the Modal volume <code>laya-interp</code> under <code>results/</code>; the full figure report is served by the token-gated <code>laya-interp</code> web endpoint.</li>
+<li><strong>Rerun</strong> any track with <code>modal run modal_interp.py --task &lt;track1|track1b|track2|track3|track4|track43|followups|fp32|llm_steps|stretch|report&gt;</code>.</li>
+</ul>
+
+</main>
+</body>
+</html>
