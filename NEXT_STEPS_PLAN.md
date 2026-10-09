@@ -89,6 +89,13 @@ Three interventions on the same items:
 - **Key test:** whether the per-item scale change from (a) varies with difficulty or correctness (regulator) or stays near-constant (generic amplifier).
 - **Decision:** if (b) reproduces every effect of (a), report C2 as "a late-MLP logit amplifier" and drop the word "regulator".
 
+**Outcome, 2026-10-09.**
+
+- **Decision rule triggered.** Per-item rescaling reproduces the calibration effect of ablating MLPs 22/26/27, and a global temperature matches or beats it. C2 is now reported as a logit amplifier, not a regulator.
+- **Where it acts:** at the [MASK] positions only.
+- **How it scales:** about 2× (ratio 0.47–0.49). The ratio does not depend on source, depends only weakly on correctness, and tracks the base margin.
+- **Cost:** ablation flips about 4% of answers with no gain.
+
 ### Phase 4 · Cross-model replication (high priority, ~$3, 0.5 day)
 
 - Run Phases 1–3 on **laya-multilingual**: a different pretrained base (mmBERT), its own training run, 22 layers.

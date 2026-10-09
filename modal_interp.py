@@ -497,6 +497,21 @@ def phase2_e4b(model: str = "laya") -> dict:
     return {"ok": True}
 
 
+@app.function(gpu="H100", volumes=VOLUMES, timeout=2 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def phase3_run(model: str = "laya") -> dict:
+    from interp import phase3
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    store.reload()
+    agent = load_agent(model, device="cuda")
+    out = phase3.run(agent, Runner(agent), model, log=lambda s: print(s, flush=True))
+    save(f"phase3/{model}", out)
+    store.commit()
+    return {"model": model, "ok": True}
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -574,5 +589,8 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
             print(phase2_run.remote(m))
     elif task == "e4b":
         print(phase2_e4b.remote(paths or "laya"))
+    elif task == "phase3":
+        for m in (paths or "laya").split(","):
+            print(phase3_run.remote(m))
     elif task == "lines":
         print(show_lines.remote(paths, start, end))
