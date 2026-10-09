@@ -153,6 +153,15 @@ Same architecture, init, budget and evaluation; only the label regime in the tra
 - **Prediction:** R5 > R1 > R4 > R3 ≈ R2 ≈ R0.
 - **Stated limit:** this tests whether label semantics in the training data can create the shortcut; it does not reconstruct laya's own training set.
 
+**Outcome, 2026-10-09.**
+
+- **Only R5 (planted) creates the shortcut:** yes/no label-following 88.8% ± 0.3 across seeds vs 4.4% for R0 (p = 0.002).
+- **The other regimes match baseline:** R1, R2, R3 and R4 all give 1.4–5.8%.
+- **The prediction "R1 > R0" was wrong:** meaningful labels alone do not create the shortcut.
+- **The guard's effect on R5 differs by seed:** 6–21%, 26–31% and 51–95% remain. Same behaviour, different mechanisms.
+- **Limit:** laya's real training data are unknown.
+- **Operational note:** 18 jobs exceeded the workspace's 10-GPU concurrency limit, so 8 queued (no extra cost). Future launches are capped at 10.
+
 ### Phase 6 · Literature, done properly (no compute, 1 day)
 
 Read in full and summarize the exact claims and setups of:
