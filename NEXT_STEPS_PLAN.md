@@ -226,3 +226,89 @@ Spent so far: $12.23 of the original $100 cap. This plan fits in the remainder.
 - **README:** environment, pinned revisions and per-task reproduction commands.
 - **Doc:** reordered with C3 as the headline and retitled "When Labels Override Evidence".
 - **Root copies:** `How_Laya_Chooses*.html/pdf` in the repo root now mirror the new report.
+
+---
+
+# Phase 8 · Response to the second review (frozen 2026-10-09, before any run)
+
+**Primary claim** (stays C3). In laya, semantic answer labels can dominate passage evidence through a direct label → answer pathway. A targeted intervention suppresses it, and controlled retraining shows that a particular training information structure *can* induce it. This does not establish laya's actual training history.
+
+## Metric definitions (used everywhere from here)
+
+- **Paired transition.** Each item is scored with normal labels and with swapped label words. Cells: (normal correct, swapped correct), (correct, wrong), (wrong, correct), (wrong, wrong). Counts are reported for every cell.
+- **Label-following.** P(swapped wrong | normal correct) = n(correct → wrong) / n(normal correct). The denominator n is always reported.
+- **Swap gap.** acc(normal) − acc(swapped), over all items.
+- **Recovery** (patching or restoration). Per item, r = (y_patched − y_corrupt) / (y_clean − y_corrupt), where y is the log-odds of the "holds" option. Items with |y_clean − y_corrupt| < 0.5 are excluded and the exclusion count is reported. Reported as the median over items, with a 95% bootstrap CI (2,000 resamples over items).
+- **Seed-level tests.** The unit is the trained model (one seed). Welch t-test plus an exact two-sided permutation test on seed means; per-seed values are always listed.
+- **Item-level uncertainty.** Bootstrap over items, reported separately from seed-level uncertainty.
+
+## P1 · Confirmatory label–evidence conflict benchmark (data frozen before any guard is run)
+
+- **Items.**
+  - 300 MultiRC validation items, none sharing a paragraph with `noul_confirm`.
+  - 300 GLUE QNLI validation items ("Does the sentence answer the question?").
+  - All human-written, never used before.
+- **Evidence factor.**
+  - real passage;
+  - contradicting edit (gpt-5.6-terra minimal edit; kept only if gpt-5.6-luna answers the flipped gold);
+  - blanked passage.
+- **Label factor.** Normal vs swapped label words.
+- **Wordings.**
+  - Old: yes/no, true/false.
+  - New, never used before: right/wrong, accurate/inaccurate, confirmed/unconfirmed.
+  - New multi-token: "yes, that is right" / "no, that is wrong", "it is the case" / "it is not the case".
+  - Neutral: ◇/△ and A/B.
+- **Freeze.** The SHA-256 of the frozen file is recorded below before evaluation.
+
+## P2 · Matched intervention controls (on the P1 benchmark; laya, typed, multilingual)
+
+- **Original guard:** [MASK] → own and other label tokens, all local layers.
+- **Extended guard (still exploratory):** the original guard plus option text → label tokens, local layers. First test on data it was not designed on.
+- **Random-edge control:** [MASK] → the same number of random non-label tokens inside the option spans, local layers.
+- **Description control:** [MASK] → the same number of description tokens, local layers.
+- **Evidence-path block:** question tokens → passage, all layers.
+- **Sham:** [MASK] → [CLS] in local layers.
+- **Measures:** paired transitions, label-following, accuracy, ECE/Brier, multi-token wordings, and jailbreak and injection AUROC.
+
+## P3 · Training-origin dose response
+
+Shuffled noul option order in every arm; same data, loss (RLCD), init and budget.
+
+| Arm | Descriptions | Label word | Seeds |
+|---|---|---|---|
+| D0 uninformative | informative | random (correct p = 0.5) | 0–2 |
+| D1 redundant | informative | always correct | 0–2 |
+| D2 weak | neutral | correct p = 0.75 | 0–2 |
+| D3 strong but insufficient | neutral | correct p = 0.9 | 0–2 |
+| Planted (sole cue) | neutral | always correct | 0–2 done; add 3–5 |
+| Baseline (default labels, fixed order) | default | default | 0–2 done; add 3–5 |
+
+- **Primary test:** planted vs baseline with 6 seeds each, exact permutation test.
+- **Prediction:** label-following increases with label reliability when descriptions are neutral; D1 stays low.
+
+## P4 · Position vs interaction with binding preserved (10 models)
+
+- **Position permutation:** canonical token order with option position ids taken from the reversed layout.
+- **Token permutation:** reversed token order with the canonical layout's position ids.
+- **Question answered:** does the decision follow positions (agree with the true reversed run) or token order?
+- **Replacement types for the competition metric M:** neutral filler, "-" filler, and a length-matched distractor taken from another item's option.
+
+## P5 · External architecture (RoBERTa-large option-marker models)
+
+- **Training:** laya's trainer with `FacebookAI/roberta-large` as the encoder; planted vs baseline, 3 seeds each.
+- **Tests:**
+  - whether the shortcut emerges;
+  - whether a [MASK] → label block in all layers removes it;
+  - whether blocking question → passage drops accuracy.
+- **Mask scope:** RoBERTa has no local/global split, so its masks apply to all layers.
+
+## P6 · Audits and C2
+
+- **Audit sheets for human checking** (CSV, kept out of git): 60 random contradicting edits, 60 GPT-written C3 items, 60 jailbreak rewrites.
+- **Style test:** 150 benign prompts written in jailbreak style (persona or role-play, no rule override) vs 150 plain benign prompts; compare laya's flag rates.
+- **C2:** global temperature fitted on the exploratory MC split and applied to the confirmatory split, compared with late-MLP ablation.
+
+## Not done
+
+- No new unrelated analyses.
+- C1, C2, C4 and C5 remain framed as secondary, at their current evidence level.
