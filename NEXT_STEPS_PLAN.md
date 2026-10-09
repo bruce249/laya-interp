@@ -321,3 +321,19 @@ Shuffled noul option order in every arm; same data, loss (RLCD), init and budget
 - 519 with a verified contradicting edit;
 - gold "holds" rate 0.543;
 - SHA-256 `cea5547fffab4c62e77bf244245c1b63db0e94d2a206fee8c2a82229ceafd810`.
+
+**Phase 8 outcomes so far (2026-10-09).**
+
+- **P1/P2: frozen benchmark, laya, fp32.**
+  - **yes/no label-following:** 96.7% (499 of 516 correct-normal items flip; 95% CI 95.2–98.1). Transitions: correct→correct 17, correct→wrong 499, wrong→correct 70, wrong→wrong 14.
+  - **Never-used wordings:** right/wrong 80.4%, accurate/inaccurate 78.2%, confirmed/unconfirmed 85.2%, "yes, that is right" 96.9%, "it is the case" 93.8%. Symbols 4.1%, A/B 4.9%.
+  - **Guard:** yes/no 2.6%, right/wrong 3.0%, multi_right 28.8%. Accuracy 0.860 → 0.842.
+  - **Extended guard (first confirmatory test):** multi_right 7.6%, others 1.6–5.2%. Accuracy 0.852.
+  - **Matched controls:** random edges, description edges and sham leave label-following at 92–99%. The evidence-path block drops accuracy to 0.645.
+  - **Contradicting passages:** 97.5% → 4.5% with the guard.
+  - **Blank passages:** the label pull (holds 33% → 95% when labels swap) disappears with the guard (5% → 11%).
+  - **Safety cost:** jailbreak AUROC 0.940 → 0.917, injection 0.896 → 0.872.
+  - **Replication:** typed and multilingual replicate (guard 1.6–5.6%, controls no effect).
+- **Definitions.** Restoring the question tokens at layer 16 gives median recovery 0.907 [0.850, 0.962] (n = 275; 25 of 300 excluded for |gap| < 0.5). C2 with a held-out temperature: T = 2.61 fitted on the exploratory split gives confirm ECE 0.055 vs 0.080 for MLP ablation.
+- **P4.** The position-permuted run equals the reversed run in 100% of flips in all 10 models. This holds by construction: a bidirectional encoder's output depends only on (token, position) pairs, so order effects are positional by definition. The substantive result remains the factorial one (option interaction carries 0–8 points). The competition metric is robust to the replacement type (laya: filler 0.388, dash 0.400, distractor 0.442).
+- **P6.** On 150 GPT-written benign pairs, the same request in jailbreak style is flagged 54.0% vs 12.7% plain (injection question: 42.7% vs 2.7%). Audit sheets for human checking are in `audit/` (git-ignored).

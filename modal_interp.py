@@ -606,6 +606,98 @@ def p8_data() -> dict:
             "gold_rate": sum(it["gold"] for it in items) / len(items), "sha256": phase8.freeze(items)}
 
 
+@app.function(gpu="H100", volumes=VOLUMES, timeout=5 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def p8_eval(model: str = "laya") -> dict:
+    from interp import data, phase8
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    log = lambda s: print(s, flush=True)  # noqa: E731
+    store.reload()
+    agent = load_agent(model, device="cuda")
+    runner = Runner(agent)
+    items = data.load_jsonl("conflict_bench.jsonl")
+    out = {"benchmark": phase8.evaluate_benchmark(agent, runner, items, model, log),
+           "safety": phase8.safety_under_interventions(agent, runner, model, log)}
+    if model == "laya":
+        main = [it for it in data.load_jsonl("boolq.jsonl") if it["split"] == "main"][:300]
+        out["restoration_ci"] = phase8.restoration_ci(agent, runner, main)
+        out["c2_heldout_T"] = phase8.c2_heldout_temperature(agent, runner, log)
+    save(f"phase8/eval_{model}", out)
+    store.commit()
+    return {"model": model, "ok": True}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=3 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def p4_run(model: str) -> dict:
+    from interp import factorial
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    store.reload()
+    agent = load_agent(model, device="cuda")
+    out = factorial.run_p4(agent, Runner(agent), model, log=lambda s: print(s, flush=True))
+    save(f"phase8/p4_{model}", out)
+    store.commit()
+    return {"model": model, "ok": True}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=4 * 3600, env=HF_ENV, scaledown_window=60, memory=65536)
+def p8_train(regime: str, seed: int, encoder: str = "") -> dict:
+    from interp import data, phase5, phase8
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    log = lambda s: print(s, flush=True)  # noqa: E731
+    tag = "p8rob" if encoder else "p5"
+    tr = phase5.train_regime(regime, seed, log=log, encoder=encoder or None, tag=tag)
+    weights.commit()
+    store.commit()
+    store.reload()
+    if encoder:
+        ev = phase8.roberta_eval(tr["name"], log=log)
+        save(f"phase8/rob_{tr['name']}", {"train": tr, "eval": ev})
+    else:
+        ev = phase5.evaluate(tr["name"], log=log)
+        agent = load_agent(tr["name"], device="cuda")
+        bench = phase8.evaluate_benchmark(agent, Runner(agent), data.load_jsonl("conflict_bench.jsonl"), tr["name"],
+                                          log, inter_names=["none", "guard"])
+        save(f"phase5/{tr['name']}", {"train": tr, "eval": ev})
+        save(f"phase8/bench_{tr['name']}", bench)
+    store.commit()
+    return {"name": tr["name"], "ok": True}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=3 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def p8_bench(name: str) -> dict:
+    from interp import data, phase8
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    store.reload()
+    agent = load_agent(name, device="cuda")
+    bench = phase8.evaluate_benchmark(agent, Runner(agent), data.load_jsonl("conflict_bench.jsonl"), name,
+                                      lambda s: print(s, flush=True), inter_names=["none", "guard"])
+    save(f"phase8/bench_{name}", bench)
+    store.commit()
+    return {"name": name, "ok": True}
+
+
+@app.function(cpu=8, memory=32768, volumes=VOLUMES, timeout=3600, secrets=[OPENAI], env=HF_ENV | {"LLM_BULK": "gpt-5.6-luna"})
+def p6_style() -> dict:
+    from interp import phase8
+    from interp.runs import save
+
+    out = phase8.style_test(log=lambda s: print(s, flush=True))
+    save("phase8/style_test", out)
+    store.commit()
+    return out
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -704,5 +796,32 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
         print(phase5_dryrun.remote())
     elif task == "p8data":
         print(p8_data.remote())
+    elif task == "p8eval":
+        calls = [p8_eval.spawn(m) for m in (paths or "laya,typed,multilingual").split(",")]
+        for c in calls:
+            print(c.get())
+    elif task == "p4":
+        models = (paths or "laya,typed,multilingual,smolaya,ctrl_soft_ce,ctrl_soft_ce_s1,ctrl_soft_ce_s2,"
+                           "ctrl_rlcd,ctrl_rlcd_s1,ctrl_rlcd_s2").split(",")
+        for i in range(0, len(models), 7):
+            calls = [p4_run.spawn(m) for m in models[i:i + 7]]
+            for c in calls:
+                print(c.get())
+    elif task == "p8train":
+        jobs = [("train", (r, sd, "")) for r in ("dose_d0", "dose_d1", "dose_d2", "dose_d3") for sd in (0, 1, 2)]
+        jobs += [("train", (r, sd, "")) for r in ("planted", "baseline") for sd in (3, 4, 5)]
+        jobs += [("train", (r, sd, "FacebookAI/roberta-large")) for r in ("planted", "baseline") for sd in (0, 1, 2)]
+        jobs += [("bench", (n,)) for n in ("p5_planted_s0", "p5_planted_s1", "p5_planted_s2", "ctrl_rlcd",
+                                           "ctrl_rlcd_s1", "ctrl_rlcd_s2")]
+        if paths:
+            keep = set(paths.split(","))
+            jobs = [j for j in jobs if "_".join(str(x) for x in j[1] if x != "") in keep]
+        wave = int(pattern or 10)
+        for i in range(0, len(jobs), wave):
+            calls = [(p8_train if kind == "train" else p8_bench).spawn(*args) for kind, args in jobs[i:i + wave]]
+            for c in calls:
+                print(c.get())
+    elif task == "p6style":
+        print(p6_style.remote())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

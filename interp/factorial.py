@@ -172,3 +172,113 @@ def run(agent, runner, model: str, log=print, n_inter: int = 600) -> dict:
             f"gate_failed={acc_drop_B > GATE_ACC_DROP}")
     runner.force_fp32 = False
     return out
+
+
+# ----- Phase 8, P4: position vs token order with binding preserved -----
+
+def _spans_len(enc):
+    return [b - a for a, b in enc.option_spans]
+
+
+def positions_as_reversed(enc) -> list[int]:
+    """Canonical token order, but each option block gets the positions it would have in the reversed layout."""
+    m0, lens = enc.markers[0], _spans_len(enc)
+    pos = list(range(m0))
+    for j, (a, b) in enumerate(enc.option_spans):
+        start = m0 + sum(lens[j + 1:])
+        pos += [start + k for k in range(b - a)]
+    pos += list(range(len(pos), len(enc.ids)))
+    return pos
+
+
+def positions_as_canonical_for_reversed(enc) -> list[int]:
+    """Reversed token order (enc built with option_order reversed), but positions of the canonical layout."""
+    m0, lens = enc.markers[0], _spans_len(enc)
+    k = len(lens)
+    canon_len = lens[::-1]                       # canonical option j has length lens[k-1-j]
+    pos = list(range(m0))
+    for s, (a, b) in enumerate(enc.option_spans):
+        j = k - 1 - s                            # canonical index of the option in slot s
+        start = m0 + sum(canon_len[:j])
+        pos += [start + t for t in range(b - a)]
+    pos += list(range(len(pos), len(enc.ids)))
+    return pos
+
+
+def position_vs_token(agent, runner, items, casting="generic") -> dict:
+    k_of = [len(it["options"]) for it in items]
+    rev = [list(range(k))[::-1] for k in k_of]
+    e_can = [cp.encode_mc(agent, it, casting) for it in items]
+    e_rev = [cp.encode_mc(agent, it, casting, option_order=o) for it, o in zip(items, rev)]
+    A = [np.argmax(to_option_order(r, None)) for r in slot_logits(runner, e_can)]
+    B = [np.argmax(to_option_order(r, o)) for r, o in zip(slot_logits(runner, e_rev), rev)]
+    C = [np.argmax(to_option_order(r, None)) for r in slot_logits(runner, e_can, position_fn=positions_as_reversed)]
+    D = [np.argmax(to_option_order(r, o)) for r, o in
+         zip(slot_logits(runner, e_rev, position_fn=positions_as_canonical_for_reversed), rev)]
+    A, B, C, D = map(np.array, (A, B, C, D))
+    flip = A != B
+    gold = np.array([it["gold"] for it in items])
+    res = {"n": int(len(items)), "n_flip": int(flip.sum()), "flip_rate": float(flip.mean()),
+           "pos_permuted_matches_reversed_given_flip": float((C[flip] == B[flip]).mean()) if flip.any() else None,
+           "pos_permuted_matches_canonical_given_flip": float((C[flip] == A[flip]).mean()) if flip.any() else None,
+           "tok_permuted_matches_canonical_given_flip": float((D[flip] == A[flip]).mean()) if flip.any() else None,
+           "tok_permuted_matches_reversed_given_flip": float((D[flip] == B[flip]).mean()) if flip.any() else None,
+           "pos_permuted_changes_answer": float((C != A).mean()), "tok_permuted_changes_answer": float((D != B).mean()),
+           "acc": {"canonical": float((A == gold).mean()), "reversed": float((B == gold).mean()),
+                   "pos_permuted": float((C == gold).mean()), "tok_permuted": float((D == gold).mean())}}
+    return res
+
+
+def interaction_distractor(agent, runner, items, casting="generic", seed=0) -> dict:
+    """Competition M when option j's tokens are replaced by a length-matched span from another item's option."""
+    import copy
+
+    rng = random.Random(seed)
+    filler = cp.filler_token(agent.tok)
+    pool = [agent.tok(" " + o, add_special_tokens=False)["input_ids"] for it in items for o in it["options"]]
+    base_encs, fill, owner = [], [], []
+    for n, it in enumerate(items):
+        e = cp.encode_mc(agent, it, casting)
+        base_encs.append(e)
+        for j in range(e.k):
+            a, b = e.option_spans[j]
+            L = b - a - 1
+            src = rng.choice(pool)
+            toks = (src + [filler] * L)[:L]
+            f = copy.copy(e)
+            f.ids = list(e.ids)
+            f.ids[a + 1:b] = toks
+            fill.append(f)
+            owner.append((n, j))
+    base = [to_option_order(r, None) for r in slot_logits(runner, base_encs)]
+    rows = [to_option_order(r, None) for r in slot_logits(runner, fill)]
+    vals = []
+    for (n, j), row in zip(owner, rows):
+        s0 = base[n]
+        others = [m for m in range(len(s0)) if m != j]
+        c0 = s0[others] - s0[others].mean()
+        c1 = row[others] - row[others].mean()
+        vals += list(np.abs(c1 - c0))
+    return {"mean_abs_M_centered_distractor": mt.ci_dict(np.array(vals), n=1000)}
+
+
+def run_p4(agent, runner, model: str, log=print) -> dict:
+    from .runs import mc_items
+
+    runner.force_fp32 = True
+    confirm = mc_confirm()
+    main = [it for it in mc_items() if it["split"] == "main"]
+    out = {"model": model}
+    for sname, subset in (("explore_main", main), ("confirm", confirm)):
+        pv = position_vs_token(agent, runner, subset)
+        filler_m = cp.interaction(agent, runner, subset[:600], "generic", with_removal=False)["mean_abs_M_centered"]
+        dash_m = cp.interaction(agent, runner, subset[:600], "generic", with_removal=False,
+                                filler_text=" -")["mean_abs_M_centered"]
+        dist_m = interaction_distractor(agent, runner, subset[:600])["mean_abs_M_centered_distractor"]
+        out[sname] = {"position_vs_token": pv, "M_filler": filler_m, "M_dash": dash_m, "M_distractor": dist_m}
+        log(f"[p4 {model} {sname}] flips={pv['flip_rate']:.3f} (n={pv['n_flip']}) | given a flip: pos-permuted = reversed "
+            f"{pv['pos_permuted_matches_reversed_given_flip']:.3f}, tok-permuted = canonical "
+            f"{pv['tok_permuted_matches_canonical_given_flip']:.3f} | M filler {filler_m['est']:.3f} dash {dash_m['est']:.3f} "
+            f"distractor {dist_m['est']:.3f}")
+    runner.force_fp32 = False
+    return out

@@ -16,11 +16,27 @@ SEMANTIC_PAIRS = [("false", "true"), ("no", "yes"), ("incorrect", "correct"), ("
                   ("invalid", "valid"), ("unsupported", "supported")]
 SYMBOL_PAIRS = [("◇", "△"), ("※", "§"), ("¤", "¶"), ("⬡", "⬢"), ("♢", "♤"), ("∴", "∵")]
 NEUTRAL_CRIT = {"false": "this option", "true": "this option"}
-REGIMES = ("semantic", "neutral", "random_mapping", "mixture", "planted")
+REGIMES = ("semantic", "neutral", "random_mapping", "mixture", "planted",
+           "dose_d0", "dose_d1", "dose_d2", "dose_d3", "baseline")
+# Phase 8 dose response (shuffled noul order in every dose arm): (descriptions, P(label word correct))
+DOSE = {"dose_d0": ("informative", 0.5), "dose_d1": ("informative", 1.0),
+        "dose_d2": ("neutral", 0.75), "dose_d3": ("neutral", 0.9)}
+SHUFFLED = ("planted", "dose_d0", "dose_d1", "dose_d2", "dose_d3")
 
 
 def noul_q(base_q: dict, regime: str, rng: random.Random) -> dict:
     q = dict(base_q)
+    if regime == "baseline":
+        return q
+    if regime in DOSE:
+        desc, p_correct = DOSE[regime]
+        f, t = rng.choice(SEMANTIC_PAIRS)
+        if rng.random() >= p_correct:
+            f, t = t, f
+        q["labels"] = {"false": f, "true": t}
+        if desc == "neutral":
+            q["criteria"] = dict(NEUTRAL_CRIT)
+        return q
     if regime == "mixture":
         regime = rng.choice(["semantic", "neutral", "random_mapping"])
     if regime == "neutral":
@@ -35,7 +51,7 @@ def noul_q(base_q: dict, regime: str, rng: random.Random) -> dict:
     return q
 
 
-def train_regime(regime: str, seed: int, log=print) -> dict:
+def train_regime(regime: str, seed: int, log=print, encoder: str | None = None, tag: str = "p5") -> dict:
     import torch
     from laya.common import build_model
     from laya.train import TrainConfig, save_checkpoint, train_model
@@ -47,6 +63,11 @@ def train_regime(regime: str, seed: int, log=print) -> dict:
     ref = load_agent("laya", device="cpu", eager_attn=False)
     tok, cfg = ref.tok, copy.deepcopy(ref.cfg)
     del ref
+    if encoder:                                   # external architecture (Phase 8, P5)
+        from transformers import AutoTokenizer
+
+        cfg["encoder"] = encoder
+        tok = AutoTokenizer.from_pretrained(encoder)
     rng = random.Random(1000 * seed + REGIMES.index(regime))
     rows = []
     for r in train_rows(0):
@@ -58,13 +79,14 @@ def train_regime(regime: str, seed: int, log=print) -> dict:
     torch.manual_seed(seed)
     model = build_model(cfg, pretrained=True)
     config = TrainConfig(epochs=2, micro_batch=32, grad_accum=2, loss="rlcd", seed=seed, log_every=400,
-                         shuffle_options=("noul",) if regime == "planted" else ())
+                         shuffle_options=("noul",) if regime in SHUFFLED else ())
     history = train_model(model, tok, items, config, torch.device("cuda"),
                           cfg.get("max_len", 512), cfg.get("head_max_len", 192))
     out_cfg = dict(cfg)
-    out_cfg.update({"temperature": [1.0, 1.0, 1.0], "temperature_by_options": {}, "model_name": f"p5-{regime}",
-                    "training": {"loss": "rlcd", "regime": regime, "seed": seed, "epochs": 2, "items": len(items)}})
-    name = f"p5_{regime}_s{seed}"
+    out_cfg.update({"temperature": [1.0, 1.0, 1.0], "temperature_by_options": {}, "model_name": f"{tag}-{regime}",
+                    "training": {"loss": "rlcd", "regime": regime, "seed": seed, "epochs": 2, "items": len(items),
+                                 "encoder": cfg["encoder"]}})
+    name = f"{tag}_{regime}_s{seed}"
     save_checkpoint(model, tok, out_cfg, str(CKPT / name))
     log(f"[p5 {regime} s{seed}] saved, loss={history} ({time.time() - t0:.0f}s)")
     return {"name": name, "history": history, "items": len(items), "skipped": skipped}
