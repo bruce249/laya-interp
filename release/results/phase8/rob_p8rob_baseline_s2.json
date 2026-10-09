@@ -1,0 +1,307 @@
+{
+  "train": {
+    "name": "p8rob_baseline_s2",
+    "history": [
+      1.1076287924636405,
+      1.2119156597466674
+    ],
+    "items": 31419,
+    "skipped": 0
+  },
+  "eval": {
+    "model": "p8rob_baseline_s2",
+    "fidelity_max_logit_diff": 0.0,
+    "conflict_bench": {
+      "yes_no/none": {
+        "n": 600,
+        "correct_correct": 290,
+        "correct_wrong": 35,
+        "wrong_correct": 30,
+        "wrong_wrong": 245,
+        "label_following": 0.1076923076923077,
+        "denominator": 325,
+        "label_following_ci": [
+          0.07692307692307693,
+          0.14153846153846153
+        ],
+        "acc_normal": 0.5416666666666666,
+        "acc_swapped": 0.5333333333333333,
+        "swap_gap": 0.008333333333333304
+      },
+      "yes_no/label": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "yes_no/evidence": {
+        "n": 600,
+        "correct_correct": 313,
+        "correct_wrong": 13,
+        "wrong_correct": 6,
+        "wrong_wrong": 268,
+        "label_following": 0.03987730061349693,
+        "denominator": 326,
+        "label_following_ci": [
+          0.018404907975460124,
+          0.06134969325153374
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5316666666666666,
+        "swap_gap": 0.011666666666666714
+      },
+      "true_false/none": {
+        "n": 600,
+        "correct_correct": 319,
+        "correct_wrong": 7,
+        "wrong_correct": 7,
+        "wrong_wrong": 267,
+        "label_following": 0.02147239263803681,
+        "denominator": 326,
+        "label_following_ci": [
+          0.006134969325153374,
+          0.03680981595092025
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/label": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/evidence": {
+        "n": 600,
+        "correct_correct": 324,
+        "correct_wrong": 2,
+        "wrong_correct": 2,
+        "wrong_wrong": 272,
+        "label_following": 0.006134969325153374,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.015337423312883436
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/none": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/label": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/evidence": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      }
+    },
+    "boolq_heldout": {
+      "yes_no/none": {
+        "n": 300,
+        "correct_correct": 178,
+        "correct_wrong": 10,
+        "wrong_correct": 10,
+        "wrong_wrong": 102,
+        "label_following": 0.05319148936170213,
+        "denominator": 188,
+        "label_following_ci": [
+          0.026595744680851064,
+          0.0851063829787234
+        ],
+        "acc_normal": 0.6266666666666667,
+        "acc_swapped": 0.6266666666666667,
+        "swap_gap": 0.0
+      },
+      "yes_no/label": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "yes_no/evidence": {
+        "n": 300,
+        "correct_correct": 188,
+        "correct_wrong": 2,
+        "wrong_correct": 2,
+        "wrong_wrong": 108,
+        "label_following": 0.010526315789473684,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.02631578947368421
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/none": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 2,
+        "wrong_correct": 0,
+        "wrong_wrong": 108,
+        "label_following": 0.010416666666666666,
+        "denominator": 192,
+        "label_following_ci": [
+          0.0,
+          0.026041666666666668
+        ],
+        "acc_normal": 0.64,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.00666666666666671
+      },
+      "true_false/label": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/evidence": {
+        "n": 300,
+        "correct_correct": 188,
+        "correct_wrong": 1,
+        "wrong_correct": 2,
+        "wrong_wrong": 109,
+        "label_following": 0.005291005291005291,
+        "denominator": 189,
+        "label_following_ci": [
+          0.0,
+          0.021164021164021163
+        ],
+        "acc_normal": 0.63,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": -0.0033333333333332993
+      },
+      "neutral_sym/none": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/label": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/evidence": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "model": "ctrl_rlcd",
+  "explore_main": {
+    "position_vs_token": {
+      "n": 1392,
+      "n_flip": 202,
+      "flip_rate": 0.14511494252873564,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.14511494252873564,
+      "tok_permuted_changes_answer": 0.14511494252873564,
+      "acc": {
+        "canonical": 0.6896551724137931,
+        "reversed": 0.6795977011494253,
+        "pos_permuted": 0.6795977011494253,
+        "tok_permuted": 0.6896551724137931
+      }
+    },
+    "M_filler": {
+      "est": 0.343778797874304,
+      "lo": 0.3371025077340604,
+      "hi": 0.351052293488208,
+      "n": 8874
+    },
+    "M_dash": {
+      "est": 0.3438633743968261,
+      "lo": 0.3370310073519969,
+      "hi": 0.3512242531311229,
+      "n": 8874
+    },
+    "M_distractor": {
+      "est": 0.374798983335495,
+      "lo": 0.3674689531326294,
+      "hi": 0.3825587332248688,
+      "n": 8874
+    }
+  },
+  "confirm": {
+    "position_vs_token": {
+      "n": 1000,
+      "n_flip": 257,
+      "flip_rate": 0.257,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.257,
+      "tok_permuted_changes_answer": 0.257,
+      "acc": {
+        "canonical": 0.469,
+        "reversed": 0.464,
+        "pos_permuted": 0.464,
+        "tok_permuted": 0.469
+      }
+    },
+    "M_filler": {
+      "est": 0.35034938015716355,
+      "lo": 0.34299436343498785,
+      "hi": 0.357833829229012,
+      "n": 7200
+    },
+    "M_dash": {
+      "est": 0.3531270890388017,
+      "lo": 0.3457099608988631,
+      "hi": 0.36075464299649723,
+      "n": 7200
+    },
+    "M_distractor": {
+      "est": 0.40121981501579285,
+      "lo": 0.39259085059165955,
+      "hi": 0.4094218611717224,
+      "n": 7200
+    }
+  }
+}

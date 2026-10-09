@@ -698,6 +698,23 @@ def p6_style() -> dict:
     return out
 
 
+@app.function(gpu="H100", volumes=VOLUMES, timeout=3 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def p8_guardall(name: str) -> dict:
+    from interp import data, phase8
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    store.reload()
+    agent = load_agent(name, device="cuda")
+    out = phase8.evaluate_benchmark(agent, Runner(agent), data.load_jsonl("conflict_bench.jsonl"), name,
+                                    lambda s: print(s, flush=True),
+                                    inter_names=["none", "guard", "guard_all_layers", "guard_extended_all_layers"])
+    save(f"phase8/guardall_{name}", out)
+    store.commit()
+    return {"name": name, "ok": True}
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -823,5 +840,11 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
                 print(c.get())
     elif task == "p6style":
         print(p6_style.remote())
+    elif task == "p8guardall":
+        names = (paths or "").split(",")
+        for i in range(0, len(names), 10):
+            calls = [p8_guardall.spawn(n) for n in names[i:i + 10]]
+            for c in calls:
+                print(c.get())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

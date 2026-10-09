@@ -337,3 +337,19 @@ Shuffled noul option order in every arm; same data, loss (RLCD), init and budget
 - **Definitions.** Restoring the question tokens at layer 16 gives median recovery 0.907 [0.850, 0.962] (n = 275; 25 of 300 excluded for |gap| < 0.5). C2 with a held-out temperature: T = 2.61 fitted on the exploratory split gives confirm ECE 0.055 vs 0.080 for MLP ablation.
 - **P4.** The position-permuted run equals the reversed run in 100% of flips in all 10 models. This holds by construction: a bidirectional encoder's output depends only on (token, position) pairs, so order effects are positional by definition. The substantive result remains the factorial one (option interaction carries 0–8 points). The competition metric is robust to the replacement type (laya: filler 0.388, dash 0.400, distractor 0.442).
 - **P6.** On 150 GPT-written benign pairs, the same request in jailbreak style is flagged 54.0% vs 12.7% plain (injection question: 42.7% vs 2.7%). Audit sheets for human checking are in `audit/` (git-ignored).
+- **P3 dose response (frozen benchmark, yes/no label-following per seed).**
+  - Baseline (6 seeds): 0.2, 0.7, 18.1, 9.3, 54.9, 4.7% (mean 14.7%).
+  - D0: 1.3, 0.0, 0.9%. D1: 2.8, 31.2, 98.5%. D2: 91.9, 41.1, 90.9%. D3: 95.3, 92.0, 85.8%.
+  - Planted (6 seeds): 81.2, 86.3, 84.2, 94.7, 92.3, 95.0%.
+  - Primary test, planted vs baseline: exact two-sided permutation p = 0.0022 (the minimum possible, 2/924); Welch p = 0.00018.
+  - **Prediction partly wrong:** label-following does rise with label reliability under neutral descriptions, but D1 does not stay low (one seed of three at 98.5%).
+- **Exploratory, post hoc: the same guard edges blocked in all layers.**
+  - Planted s0–s5, local guard → all-layer guard: 33.3→2.0, 78.1→26.8, 16.1→5.3, 65.5→7.1, 28.8→3.6, 71.1→12.7%. Extended all-layer guard: 0.3–19.1%.
+  - laya: 2.6% (local), 2.6% (all layers) and 0.6% (extended, all layers).
+  - Two seeds lose 20+ accuracy points.
+  - Revised reading: the same edge class, with the carrying layers differing by seed. This replaces "different mechanisms".
+- **P5 RoBERTa-large (all-layer [MASK]→label block; fidelity check 0.0).**
+  - Planted s0/s1/s2: 97.4 / 99.7 / 84.9% → 1.5 / 5.8 / 1.2%.
+  - Baseline s0/s1/s2: 0.3 / 42.1 / 10.8%.
+  - Did not learn (BoolQ ≈ 0.63–0.64, majority-class bench accuracy): baseline s0, baseline s2 and planted s1.
+  - This is a partial replication; no learning-rate retune was done.

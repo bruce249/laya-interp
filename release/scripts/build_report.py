@@ -88,6 +88,21 @@ STEER = J("followups/steering.json")
 LLM = J("followups/llm_steps.json")
 SAE = J("sae/summary.json")
 HELD3 = J("followups/heldout_track3.json")
+P8 = {m: J(f"phase8/eval_{m}.json") for m in ("laya", "typed", "multilingual")}
+P8P4 = {m: J(f"phase8/p4_{m}.json") for m in ("laya", "typed", "multilingual", "smolaya", "ctrl_soft_ce", "ctrl_rlcd")}
+STYLE = J("phase8/style_test.json")
+GALL = {n: J(f"phase8/guardall_{n}.json") for n in ("laya", "p5_planted_s0", "p5_planted_s1", "p5_planted_s2",
+                                                     "p5_planted_s3", "p5_planted_s4", "p5_planted_s5")}
+DOSE_ARMS = {"Baseline: default labels, fixed order": ["ctrl_rlcd", "ctrl_rlcd_s1", "ctrl_rlcd_s2", "p5_baseline_s3",
+                                                       "p5_baseline_s4", "p5_baseline_s5"],
+             "D0: label random, informative text": [f"p5_dose_d0_s{i}" for i in range(3)],
+             "D1: label always right, informative text": [f"p5_dose_d1_s{i}" for i in range(3)],
+             "D2: label right 75%, neutral text": [f"p5_dose_d2_s{i}" for i in range(3)],
+             "D3: label right 90%, neutral text": [f"p5_dose_d3_s{i}" for i in range(3)],
+             "Planted: label always right, neutral text": [f"p5_planted_s{i}" for i in range(6)]}
+BENCH = {n: J(f"phase8/bench_{n}.json") for ns in DOSE_ARMS.values() for n in ns}
+ROB = {n: J(f"phase8/rob_{n}.json") for n in [f"p8rob_planted_s{i}" for i in range(3)] +
+       [f"p8rob_baseline_s{i}" for i in range(3)]}
 
 # ---------------------------------------------------------------- C3 numbers
 beh = FP32["track3_behaviour"]
@@ -244,6 +259,26 @@ def seed_stats(metric):
     return np.mean(ce), np.std(ce, ddof=1), np.mean(rl), np.std(rl, ddof=1), p
 
 
+def perm_p(a, b):
+    import itertools
+
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    allv, n = np.concatenate([a, b]), len(a)
+    obs = abs(a.mean() - b.mean())
+    hits = tot = 0
+    for idx in itertools.combinations(range(len(allv)), n):
+        m = np.zeros(len(allv), bool)
+        m[list(idx)] = True
+        hits += abs(allv[m].mean() - allv[~m].mean()) >= obs - 1e-12
+        tot += 1
+    return hits / tot
+
+
+dose_vals = {a: [BENCH[n]["none"]["yes_no"]["real"]["label_following"] for n in ns] for a, ns in DOSE_ARMS.items()}
+dose_guard = {a: [BENCH[n]["guard"]["yes_no"]["real"]["label_following"] for n in ns] for a, ns in DOSE_ARMS.items()}
+dose_acc = {a: [BENCH[n]["none"]["yes_no"]["real"]["acc_normal"] for n in ns] for a, ns in DOSE_ARMS.items()}
+_pl, _bl = dose_vals["Planted: label always right, neutral text"], dose_vals["Baseline: default labels, fixed order"]
+p8_perm = perm_p(_pl, _bl)
 c5_M = seed_stats(lambda d: d["interaction"]["mean_abs_M_centered"]["est"])
 c5_ece = seed_stats(lambda d: d["baseline"]["ece_raw"])
 c5_acc = seed_stats(lambda d: d["baseline"]["accuracy"]["est"])
@@ -282,12 +317,17 @@ atg = [
     ["C3 · mechanism", "Two pathways",
      f"direct [MASK]→label read, redundant across local layers; evidence via question tokens (restoring them recovers "
      f"{max(restore['question']):.2f})"],
+    ["C3 · confirmatory benchmark", "Confirmed (frozen, human-written)",
+     f"yes/no label-following {pct(P8['laya']['benchmark']['none']['yes_no']['real']['label_following'], 1)} "
+     f"(n = {P8['laya']['benchmark']['none']['yes_no']['real']['denominator']}); guard "
+     f"{pct(P8['laya']['benchmark']['guard']['yes_no']['real']['label_following'], 1)}; same-size control edges "
+     f"{pct(P8['laya']['benchmark']['random_edges']['yes_no']['real']['label_following'], 1)}"],
     ["C3 · guard", "Confirmed on untouched data",
      f"RTE {pct(e4['RTE']['semantic_yn']['plain']['label_following'])} → {pct(e4['RTE']['semantic_yn']['guard']['label_following'])}; "
      f"MultiRC {pct(e4['MultiRC']['semantic_yn']['plain']['label_following'])} → {pct(e4['MultiRC']['semantic_yn']['guard']['label_following'])}"],
-    ["C3 · origin", "Shown by retraining",
-     f"only 'label word = the only cue' training creates it: {pct(np.mean(p5vals['planted']), 1)} vs "
-     f"{pct(np.mean(p5vals['baseline']), 1)} (p = {p5_p:.3f})"],
+    ["C3 · origin", "Shown by retraining (6 vs 6 seeds)",
+     f"planted {pct(np.mean(_pl), 1)} vs baseline {pct(np.mean(_bl), 1)} on the frozen benchmark; exact permutation "
+     f"p = {p8_perm:.4f}; a weaker but sole-cue label (90%) is enough"],
     ["C1 · order vs competition", "Separable",
      f"blocking option interaction removes {ci(P1['laya']['confirm']['flip_effects']['interaction_effect_positions_original'])} "
      f"points of flips; order-invariance keeps {pct(kept('laya'))} of competition"],
@@ -312,6 +352,19 @@ All analysis uses an explicit re-implementation of the forward pass with named, 
      for m in ("laya", "smolaya", "typed")] +
     [["multilingual", f"{V_ML['prob_maxdiff_vs_predict']:.1e}", f"±{V_ML['window_chosen']}", "—"]]))
 
+sections.append("""<h2>Definitions</h2><ul>
+<li><b>Paired transition.</b> Each item is scored with normal and with swapped label words; we report counts of
+correct→correct, correct→wrong, wrong→correct and wrong→wrong.</li>
+<li><b>Label-following</b> = n(correct→wrong) / n(correct with normal labels); the denominator n is reported. Item-level 95%
+intervals are bootstrap intervals over those n items.</li>
+<li><b>Swap gap</b> = accuracy with normal labels − accuracy with swapped labels, over all items.</li>
+<li><b>Recovery</b> (patching / restoration) per item = (y_patched − y_corrupt) / (y_clean − y_corrupt), y = log-odds of the
+"holds" option; items with |y_clean − y_corrupt| &lt; 0.5 are excluded and counted; we report the median with a bootstrap
+interval.</li>
+<li><b>Seed-level tests</b> use the trained model as the unit: per-seed values are listed and compared with an exact
+two-sided permutation test (and Welch's t-test).</li>
+<li><b>Confirmatory vs exploratory.</b> The frozen benchmark (600 MNLI + QNLI items, SHA-256 cea5547f…) and its
+interventions were fixed before evaluation; analyses added afterwards are labelled exploratory.</li></ul>""")
 sections.append("<h2>2 · C3: labels override evidence</h2><h3>2.1 Behaviour</h3>" + figs["c3_behaviour"] + f"""
 <p>Test: each option's label word is swapped ("true: no, the statement does not hold"). A model reading the passage is
 unaffected; a model reading the label word picks the option the passage contradicts. Label-following is the share of
@@ -394,6 +447,85 @@ sections.append("<h3>2.5 Replication</h3>" + table(
 
 C1NAMES = {"sequential": "Trained layout", "options_blocked_seqpos": "Options cannot see each other",
            "shipped_parallel_positions": "Options blocked + shared positions", "masked_parallel_all": "Fully masked parallel"}
+B8 = P8["laya"]["benchmark"]
+tr = B8["none"]["yes_no"]["real"]
+ivrows = []
+for iv, nm in (("none", "None"), ("guard", "Guard: [MASK]→label, local layers"),
+               ("guard_extended", "Extended guard: + option text→label"),
+               ("random_edges", "Control: same number of random option edges"),
+               ("description_edges", "Control: same number of description edges"), ("sham", "Control: [MASK]→[CLS]"),
+               ("evidence_block", "Evidence path blocked: question→passage")):
+    row = B8[iv]
+    ivrows.append([nm] + [pct(row[w]["real"]["label_following"], 1) for w in ("yes_no", "right_wrong", "multi_right",
+                                                                               "neutral_sym")]
+                  + [f3(row["yes_no"]["real"]["acc_normal"]),
+                     f"{P8['laya']['safety'][iv]['jailbreak']['auroc']:.3f} / {P8['laya']['safety'][iv]['injection']['auroc']:.3f}"])
+reprow8 = []
+for m in ("laya", "typed", "multilingual"):
+    b = P8[m]["benchmark"]
+    reprow8.append([m, pct(b["none"]["yes_no"]["real"]["label_following"], 1), pct(b["guard"]["yes_no"]["real"]["label_following"], 1),
+                    pct(b["guard_extended"]["multi_right"]["real"]["label_following"], 1),
+                    pct(b["random_edges"]["yes_no"]["real"]["label_following"], 1),
+                    f"{f3(b['none']['yes_no']['real']['acc_normal'])} → {f3(b['guard']['yes_no']['real']['acc_normal'])}"])
+rq = P8["laya"]["restoration_ci"]
+best_l = int(np.argmax([x["median"] for x in rq["question"]]))
+qb = rq["question"][best_l]
+sections.append("<h3>2.6 Confirmatory benchmark and matched controls</h3>" + f"""
+<p>A new benchmark of 600 human-written items (300 MNLI, 300 QNLI; never used before) was frozen and hashed before any
+evaluation, with {B8['none']['yes_no']['contra']['n'] if 'contra' in B8['none']['yes_no'] else 0} contradicting edits
+(gpt-5.6-terra, checked by gpt-5.6-luna) and three never-used wordings plus two multi-token ones. On laya, yes/no
+label-following is {pct(tr['label_following'], 1)} (n = {tr['denominator']}, 95% CI {pct(tr['label_following_ci'][0], 1)}–{pct(tr['label_following_ci'][1], 1)});
+transitions: correct→correct {tr['correct_correct']}, correct→wrong {tr['correct_wrong']}, wrong→correct {tr['wrong_correct']},
+wrong→wrong {tr['wrong_wrong']}.</p>""" + table(
+    ["Intervention (laya, fp32)", "yes/no", "right/wrong (new)", "\"yes, that is right\" (new)", "◇/△", "Accuracy",
+     "Jailbreak / injection AUROC"], ivrows) + table(
+    ["Checkpoint", "yes/no, none", "Guard", "Extended guard, multi-token", "Random-edge control", "Accuracy, none → guard"],
+    reprow8) + f"""
+<ul><li>The guard is specific: blocking the same number of other edges, or a sham edge, leaves label-following unchanged.</li>
+<li>The extended guard, designed earlier on other sets, passes this first confirmatory test, including multi-token labels.</li>
+<li>On contradicting passages the guard cuts label-following from
+{pct(B8['none']['yes_no']['contra']['label_following'], 1)} to {pct(B8['guard']['yes_no']['contra']['label_following'], 1)}.
+With the passage blanked, swapping labels moves "holds" answers from {pct(B8['none']['yes_no']['blank']['frac_holds_normal'])} to
+{pct(B8['none']['yes_no']['blank']['frac_holds_swapped'])}; with the guard, {pct(B8['guard']['yes_no']['blank']['frac_holds_normal'])} to
+{pct(B8['guard']['yes_no']['blank']['frac_holds_swapped'])}.</li>
+<li>Recovery from restoring the question tokens peaks at layer {best_l}: median {qb['median']:.2f}
+[{qb['lo']:.2f}, {qb['hi']:.2f}], n = {qb['n']} ({rq['excluded_small_gap']} of {rq['n_items']} excluded for a small gap).</li></ul>""")
+
+dose_rows = []
+for arm, vals_ in dose_vals.items():
+    dose_rows.append([arm, ", ".join(f"{100 * v:.1f}" for v in vals_), f"{100 * np.mean(vals_):.1f}",
+                      ", ".join(f"{100 * v:.1f}" for v in dose_guard[arm]), f3(np.mean(dose_acc[arm]))])
+gall_rows = []
+for n in ("laya", "p5_planted_s0", "p5_planted_s1", "p5_planted_s2", "p5_planted_s3", "p5_planted_s4", "p5_planted_s5"):
+    g = GALL[n]
+    gall_rows.append([n] + [f"{pct(g[iv]['yes_no']['real']['label_following'], 1)} ({f3(g[iv]['yes_no']['real']['acc_normal'])})"
+                            for iv in ("none", "guard", "guard_all_layers", "guard_extended_all_layers")])
+rob_rows = []
+for n, d in ROB.items():
+    c, h = d["eval"]["conflict_bench"], d["eval"]["boolq_heldout"]
+    learned = h["yes_no/none"]["acc_normal"] > 0.7
+    rob_rows.append([n.replace("p8rob_", "RoBERTa "), f3(h["yes_no/none"]["acc_normal"]) + ("" if learned else " (did not learn)"),
+                     pct(c["yes_no/none"]["label_following"], 1), pct(c["yes_no/label"]["label_following"], 1),
+                     f"{f3(c['yes_no/none']['acc_normal'])} → {f3(c['yes_no/evidence']['acc_normal'])}"])
+sections.append("<h3>2.7 Dose response, guard scope and an external architecture</h3>" + table(
+    ["Training arm (RLCD; shuffled order except baseline)", "yes/no label-following per seed (%)", "Mean (%)",
+     "With local guard per seed (%)", "Accuracy"], dose_rows) + f"""
+<p>Planted vs baseline with 6 seeds each: exact two-sided permutation p = {p8_perm:.4f} (the smallest value this test allows:
+every planted model exceeds every baseline model). A sole-cue label that is right only 75% or 90% of the time already
+produces strong label-following. When the label is redundant with informative option text (D1), reliance on it depends on the
+seed (one seed of three at {100 * max(dose_vals['D1: label always right, informative text']):.0f}%). Baseline models are not immune on
+this benchmark (one of six seeds at {100 * max(_bl):.0f}%).</p>""" + table(
+    ["Model (exploratory, post hoc)", "None", "Guard, local layers", "Guard, all layers", "Extended guard, all layers"],
+    gall_rows) + """
+<p>Label-following (accuracy). The local-only guard's uneven effect on retrained models is mostly a scope issue: blocking the
+same [MASK]→label edges in every layer removes most label-following in most seeds, so the retrained models use the same edge
+class but in different layers. In two seeds the all-layer block also costs 20+ accuracy points: those models rely on the label
+even to answer normally.</p>""" + table(
+    ["External model (RoBERTa-large, option-marker head)", "BoolQ accuracy", "Label-following", "With [MASK]→label block",
+     "Accuracy, none → question→passage blocked"], rob_rows) + """
+<p>RoBERTa replicates the training-origin result and the block's effect in the runs that learned the task, but 3 of 6 runs
+did not learn it (laya's learning rate is tuned for ModernBERT), so this is a partial replication.</p>""")
+
 c1rows = [[C1NAMES[c], f3(fp1[c]["accuracy"]), pct(fp1[c]["reversal_flip_rate"], 1), f3(fp1[c]["mean_abs_M_centered"])]
           for c in ("sequential", "options_blocked_seqpos", "shipped_parallel_positions", "masked_parallel_all")]
 p1rows = []
@@ -414,6 +546,12 @@ With shared positions and symmetric masks the model is order-invariant by constr
 cost and how much competition survives.</p>""" + figs["c1_factorial"] + table(
     ["Model (confirmatory set)", "Flips removed by blocking interaction (pts, 95% CI)", "Competition kept when order-invariant",
      "Accuracy cost (pts)", "Flips under random jitter"], p1rows) + figs["c1_flow"] +
+    f"<p>Position permutation (Phase 8): giving the options reversed position ids without moving the tokens reproduces the "
+    f"reversed run in {pct(P8P4['laya']['confirm']['position_vs_token']['pos_permuted_matches_reversed_given_flip'])} of flips in all "
+    f"10 models. This holds by construction, since a bidirectional encoder sees only (token, position) pairs, so order effects "
+    f"are positional by definition; the substantive result is the factorial one above. The competition measure is robust to the "
+    f"replacement used (laya: filler {P8P4['laya']['confirm']['M_filler']['est']:.2f}, dash {P8P4['laya']['confirm']['M_dash']['est']:.2f}, "
+    f"distractor {P8P4['laya']['confirm']['M_distractor']['est']:.2f}).</p>"
     "<p>A competitor's content builds up in the target option's text tokens through about layer 16, then enters the target "
     "[MASK] at layers 17–22; no small set of heads carries it.</p>")
 
@@ -433,7 +571,10 @@ neurons described for decoder LLMs, which the authors distinguish from a tempera
 <p>The scale ratio barely depends on the input (coefficient of variation {sr['cv']:.2f}; correlation with correctness
 {sr['corr_with_correct']:+.2f}; with the original margin {sr['corr_with_base_margin']:+.2f}). In typed-decisions and multilingual the
 selected late MLPs carry nearly the whole logit scale (ratios {P3['typed']['confirm']['scale_ratio']['mean']:.3f} and
-{P3['multilingual']['confirm']['scale_ratio']['mean']:.3f}); the same rescaling verdict holds.</p>""")
+{P3['multilingual']['confirm']['scale_ratio']['mean']:.3f}); the same rescaling verdict holds. With the temperature fitted on the
+exploratory split (T = {P8['laya']['c2_heldout_T']['T_fitted_on_explore']:.2f}) and applied to the confirmatory split, ECE is
+{P8['laya']['c2_heldout_T']['confirm_heldout_temperature']['ece']:.3f} vs {P8['laya']['c2_heldout_T']['confirm_mlp_ablation']['ece']:.3f}
+for MLP ablation.</p>""")
 
 best = STEER["best_specific"]
 sections.append("<h2>5 · C4: jailbreak and injection (supporting)</h2>" + f"""
@@ -446,6 +587,10 @@ head layers: the early-decodable, late-decisive pattern reported for decoder LLM
 {pct(STEER['base']['benign_flagged'])} to {pct(best['benign_flagged'])} with an unrelated question at {pct(best['urgency_flagged'])}.</li>
 <li>After gpt-5.6-terra removed only the override from {LLM['counterfactuals']['n']} flagged jailbreaks, laya still flags
 {pct(LLM['counterfactuals']['edited_flagged'])}: it reacts to jailbreak style more than to the instruction (edits not hand-checked).</li>
+<li>Style test: the same 150 harmless requests are flagged {pct(STYLE['jailbreak']['flag_rate_plain'], 1)} written plainly and
+{pct(STYLE['jailbreak']['flag_rate_styled'], 1)} written in jailbreak style (persona/role-play, no override); for the injection question
+{pct(STYLE['injection']['flag_rate_plain'], 1)} vs {pct(STYLE['injection']['flag_rate_styled'], 1)}. The pairs are GPT-written and await a
+human audit.</li>
 <li>Hindi (laya-multilingual): projecting out the English-fit direction drops detection of translated jailbreaks from
 {pct(T4M['ablate_hindi_jailbreaks']['before'])} to {pct(T4M['ablate_hindi_jailbreaks']['after'], 1)}.</li>
 </ul>""")
@@ -474,9 +619,14 @@ C1 and C2 describe how it handles options, not tuned QA behaviour.</li>
 <li>Order-invariance is guaranteed by construction in the shared-position cells; positions alone could not be tested.</li>
 <li>The multi-token extended guard is exploratory; contradicting passages and jailbreak rewrites were checked by a second model,
 not by hand; Wen et al. was read at abstract level only; SAE feature labels were contaminated and are not used.</li>
+<li>Human audits of the GPT-written items, contradicting edits, jailbreak rewrites and style pairs are prepared
+(<code>audit/</code>) but not yet done.</li>
+<li>The all-layer guard results on retrained models are exploratory (added after seeing the local-guard results); the RoBERTa
+replication is partial (3 of 6 runs did not learn).</li>
 <li>Withdrawn or corrected during the study: the early-timing account of label reading; "a confidence regulator" (now amplifier);
 a single-seed "20% less competition" (now a non-significant trend); "steering works only late"; "label-following comes from
-training data" (now: which training can create it).</li>
+training data" (now: which training can create it); "same behaviour, different mechanisms" (now: same edge class, different
+layers); the planned "position vs token order" test (an identity by construction, not evidence).</li>
 </ul>""")
 
 sections.append(f"""<h2>9 · Reproduction and cost</h2>

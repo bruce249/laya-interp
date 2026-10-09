@@ -1,0 +1,307 @@
+{
+  "train": {
+    "name": "p8rob_baseline_s0",
+    "history": [
+      1.0834066066625405,
+      0.9830854308398823
+    ],
+    "items": 31419,
+    "skipped": 0
+  },
+  "eval": {
+    "model": "p8rob_baseline_s0",
+    "fidelity_max_logit_diff": 0.0,
+    "conflict_bench": {
+      "yes_no/none": {
+        "n": 600,
+        "correct_correct": 325,
+        "correct_wrong": 1,
+        "wrong_correct": 2,
+        "wrong_wrong": 272,
+        "label_following": 0.003067484662576687,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.009202453987730062
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.545,
+        "swap_gap": -0.0016666666666667052
+      },
+      "yes_no/label": {
+        "n": 600,
+        "correct_correct": 325,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 275,
+        "label_following": 0.0,
+        "denominator": 325,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5416666666666666,
+        "acc_swapped": 0.5416666666666666,
+        "swap_gap": 0.0
+      },
+      "yes_no/evidence": {
+        "n": 600,
+        "correct_correct": 325,
+        "correct_wrong": 1,
+        "wrong_correct": 2,
+        "wrong_wrong": 272,
+        "label_following": 0.003067484662576687,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.009202453987730062
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.545,
+        "swap_gap": -0.0016666666666667052
+      },
+      "true_false/none": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/label": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/evidence": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/none": {
+        "n": 600,
+        "correct_correct": 316,
+        "correct_wrong": 10,
+        "wrong_correct": 14,
+        "wrong_wrong": 260,
+        "label_following": 0.03067484662576687,
+        "denominator": 326,
+        "label_following_ci": [
+          0.015337423312883436,
+          0.049079754601226995
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.55,
+        "swap_gap": -0.00666666666666671
+      },
+      "neutral_sym/label": {
+        "n": 600,
+        "correct_correct": 326,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 274,
+        "label_following": 0.0,
+        "denominator": 326,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5433333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/evidence": {
+        "n": 600,
+        "correct_correct": 318,
+        "correct_wrong": 8,
+        "wrong_correct": 7,
+        "wrong_wrong": 267,
+        "label_following": 0.024539877300613498,
+        "denominator": 326,
+        "label_following_ci": [
+          0.009202453987730062,
+          0.04294478527607362
+        ],
+        "acc_normal": 0.5433333333333333,
+        "acc_swapped": 0.5416666666666666,
+        "swap_gap": 0.0016666666666667052
+      }
+    },
+    "boolq_heldout": {
+      "yes_no/none": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "yes_no/label": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "yes_no/evidence": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/none": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/label": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "true_false/evidence": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/none": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/label": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      },
+      "neutral_sym/evidence": {
+        "n": 300,
+        "correct_correct": 190,
+        "correct_wrong": 0,
+        "wrong_correct": 0,
+        "wrong_wrong": 110,
+        "label_following": 0.0,
+        "denominator": 190,
+        "label_following_ci": [
+          0.0,
+          0.0
+        ],
+        "acc_normal": 0.6333333333333333,
+        "acc_swapped": 0.6333333333333333,
+        "swap_gap": 0.0
+      }
+    }
+  }
+}

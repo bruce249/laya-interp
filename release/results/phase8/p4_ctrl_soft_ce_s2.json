@@ -1,0 +1,77 @@
+{
+  "model": "ctrl_soft_ce_s2",
+  "explore_main": {
+    "position_vs_token": {
+      "n": 1392,
+      "n_flip": 189,
+      "flip_rate": 0.13577586206896552,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.13577586206896552,
+      "tok_permuted_changes_answer": 0.13577586206896552,
+      "acc": {
+        "canonical": 0.7162356321839081,
+        "reversed": 0.7234195402298851,
+        "pos_permuted": 0.7234195402298851,
+        "tok_permuted": 0.7162356321839081
+      }
+    },
+    "M_filler": {
+      "est": 0.4119929798713119,
+      "lo": 0.40374756251101407,
+      "hi": 0.4200636083937313,
+      "n": 8874
+    },
+    "M_dash": {
+      "est": 0.4511618228855503,
+      "lo": 0.44244370262017013,
+      "hi": 0.45997502927487666,
+      "n": 8874
+    },
+    "M_distractor": {
+      "est": 0.46679356694221497,
+      "lo": 0.45682162046432495,
+      "hi": 0.47623205184936523,
+      "n": 8874
+    }
+  },
+  "confirm": {
+    "position_vs_token": {
+      "n": 1000,
+      "n_flip": 200,
+      "flip_rate": 0.2,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.2,
+      "tok_permuted_changes_answer": 0.2,
+      "acc": {
+        "canonical": 0.528,
+        "reversed": 0.541,
+        "pos_permuted": 0.541,
+        "tok_permuted": 0.528
+      }
+    },
+    "M_filler": {
+      "est": 0.42833968391641974,
+      "lo": 0.41925214948727646,
+      "hi": 0.43773479409076066,
+      "n": 7200
+    },
+    "M_dash": {
+      "est": 0.4441580659006205,
+      "lo": 0.4351309361476969,
+      "hi": 0.4534609451001614,
+      "n": 7200
+    },
+    "M_distractor": {
+      "est": 0.5024556517601013,
+      "lo": 0.4906073212623596,
+      "hi": 0.5138970613479614,
+      "n": 7200
+    }
+  }
+}

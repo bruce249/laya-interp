@@ -1,0 +1,77 @@
+{
+  "model": "smolaya",
+  "explore_main": {
+    "position_vs_token": {
+      "n": 1392,
+      "n_flip": 252,
+      "flip_rate": 0.1810344827586207,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.1810344827586207,
+      "tok_permuted_changes_answer": 0.1810344827586207,
+      "acc": {
+        "canonical": 0.5488505747126436,
+        "reversed": 0.5524425287356322,
+        "pos_permuted": 0.5524425287356322,
+        "tok_permuted": 0.5488505747126436
+      }
+    },
+    "M_filler": {
+      "est": 0.19435070654793363,
+      "lo": 0.1906764439356322,
+      "hi": 0.1978262591253765,
+      "n": 8874
+    },
+    "M_dash": {
+      "est": 0.20349451348858055,
+      "lo": 0.1996962494174722,
+      "hi": 0.20709836959892602,
+      "n": 8874
+    },
+    "M_distractor": {
+      "est": 0.218589186668396,
+      "lo": 0.21446973085403442,
+      "hi": 0.22255048155784607,
+      "n": 8874
+    }
+  },
+  "confirm": {
+    "position_vs_token": {
+      "n": 1000,
+      "n_flip": 219,
+      "flip_rate": 0.219,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.219,
+      "tok_permuted_changes_answer": 0.219,
+      "acc": {
+        "canonical": 0.461,
+        "reversed": 0.475,
+        "pos_permuted": 0.475,
+        "tok_permuted": 0.461
+      }
+    },
+    "M_filler": {
+      "est": 0.19782513208144034,
+      "lo": 0.19385494768906694,
+      "hi": 0.2019819801464069,
+      "n": 7200
+    },
+    "M_dash": {
+      "est": 0.20161487432817618,
+      "lo": 0.19746812737597308,
+      "hi": 0.20566063062392642,
+      "n": 7200
+    },
+    "M_distractor": {
+      "est": 0.22390936315059662,
+      "lo": 0.219496950507164,
+      "hi": 0.22878949344158173,
+      "n": 7200
+    }
+  }
+}

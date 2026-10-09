@@ -1,0 +1,77 @@
+{
+  "model": "ctrl_rlcd_s2",
+  "explore_main": {
+    "position_vs_token": {
+      "n": 1392,
+      "n_flip": 210,
+      "flip_rate": 0.15086206896551724,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.15086206896551724,
+      "tok_permuted_changes_answer": 0.15086206896551724,
+      "acc": {
+        "canonical": 0.7033045977011494,
+        "reversed": 0.7176724137931034,
+        "pos_permuted": 0.7176724137931034,
+        "tok_permuted": 0.7033045977011494
+      }
+    },
+    "M_filler": {
+      "est": 0.3629773656174571,
+      "lo": 0.35596154853865314,
+      "hi": 0.37029363483839967,
+      "n": 8874
+    },
+    "M_dash": {
+      "est": 0.38945522377213326,
+      "lo": 0.38209009836571645,
+      "hi": 0.3970363383260735,
+      "n": 8874
+    },
+    "M_distractor": {
+      "est": 0.39446571469306946,
+      "lo": 0.3870650827884674,
+      "hi": 0.40211641788482666,
+      "n": 8874
+    }
+  },
+  "confirm": {
+    "position_vs_token": {
+      "n": 1000,
+      "n_flip": 239,
+      "flip_rate": 0.239,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.239,
+      "tok_permuted_changes_answer": 0.239,
+      "acc": {
+        "canonical": 0.511,
+        "reversed": 0.517,
+        "pos_permuted": 0.517,
+        "tok_permuted": 0.511
+      }
+    },
+    "M_filler": {
+      "est": 0.3769404483483069,
+      "lo": 0.3688867574138567,
+      "hi": 0.38487984296257816,
+      "n": 7200
+    },
+    "M_dash": {
+      "est": 0.39745429332135246,
+      "lo": 0.3895965183874748,
+      "hi": 0.4056935865451491,
+      "n": 7200
+    },
+    "M_distractor": {
+      "est": 0.427180677652359,
+      "lo": 0.41793227195739746,
+      "hi": 0.4376283586025238,
+      "n": 7200
+    }
+  }
+}

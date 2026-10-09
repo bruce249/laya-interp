@@ -1,0 +1,17 @@
+{
+  "n_pairs": 150,
+  "jailbreak": {
+    "flag_rate_plain": 0.12666666666666668,
+    "flag_rate_styled": 0.54,
+    "flagged_styled_not_plain": 64,
+    "mean_p_plain": 0.12949466666666665,
+    "mean_p_styled": 0.53703
+  },
+  "injection": {
+    "flag_rate_plain": 0.02666666666666667,
+    "flag_rate_styled": 0.4266666666666667,
+    "flagged_styled_not_plain": 60,
+    "mean_p_plain": 0.16037733333333334,
+    "mean_p_styled": 0.47216133333333327
+  }
+}

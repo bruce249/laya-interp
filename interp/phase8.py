@@ -135,6 +135,9 @@ def interventions(runner) -> dict:
         "description_edges": [(local, edge_fn("description"))],
         "evidence_block": [(allL, edge_fn("evidence"))],
         "sham": [(local, edge_fn("sham"))],
+        # exploratory, post hoc (added after P3): the same edges blocked in every layer
+        "guard_all_layers": [(allL, edge_fn("label"))],
+        "guard_extended_all_layers": [(allL, edge_fn("label")), (allL, edge_fn("label_ext"))],
     }
 
 

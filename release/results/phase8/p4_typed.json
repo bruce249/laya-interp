@@ -1,0 +1,77 @@
+{
+  "model": "typed",
+  "explore_main": {
+    "position_vs_token": {
+      "n": 1392,
+      "n_flip": 371,
+      "flip_rate": 0.2665229885057471,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.2665229885057471,
+      "tok_permuted_changes_answer": 0.2665229885057471,
+      "acc": {
+        "canonical": 0.45545977011494254,
+        "reversed": 0.44612068965517243,
+        "pos_permuted": 0.44612068965517243,
+        "tok_permuted": 0.45545977011494254
+      }
+    },
+    "M_filler": {
+      "est": 0.20710817578712346,
+      "lo": 0.20322576503719397,
+      "hi": 0.2109140058279903,
+      "n": 8874
+    },
+    "M_dash": {
+      "est": 0.21834922651891467,
+      "lo": 0.2141342879385713,
+      "hi": 0.2223071358454302,
+      "n": 8874
+    },
+    "M_distractor": {
+      "est": 0.23454801738262177,
+      "lo": 0.23003259301185608,
+      "hi": 0.2389957755804062,
+      "n": 8874
+    }
+  },
+  "confirm": {
+    "position_vs_token": {
+      "n": 1000,
+      "n_flip": 278,
+      "flip_rate": 0.278,
+      "pos_permuted_matches_reversed_given_flip": 1.0,
+      "pos_permuted_matches_canonical_given_flip": 0.0,
+      "tok_permuted_matches_canonical_given_flip": 1.0,
+      "tok_permuted_matches_reversed_given_flip": 0.0,
+      "pos_permuted_changes_answer": 0.278,
+      "tok_permuted_changes_answer": 0.278,
+      "acc": {
+        "canonical": 0.387,
+        "reversed": 0.412,
+        "pos_permuted": 0.412,
+        "tok_permuted": 0.387
+      }
+    },
+    "M_filler": {
+      "est": 0.22629187617968355,
+      "lo": 0.22138744398924365,
+      "hi": 0.23123263532866256,
+      "n": 7200
+    },
+    "M_dash": {
+      "est": 0.2274156383095154,
+      "lo": 0.22231910167271982,
+      "hi": 0.23245598600341733,
+      "n": 7200
+    },
+    "M_distractor": {
+      "est": 0.2566053569316864,
+      "lo": 0.251354843378067,
+      "hi": 0.26217013597488403,
+      "n": 7200
+    }
+  }
+}
