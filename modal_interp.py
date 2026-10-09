@@ -458,6 +458,45 @@ def debug_b() -> str:
     return chr(10).join(out)
 
 
+@app.function(cpu=4, memory=16384, volumes=VOLUMES, timeout=3600, secrets=[OPENAI],
+              env=HF_ENV | {"LLM_BULK": "gpt-5.6-luna", "LLM_CAREFUL": "gpt-5.6-terra"})
+def phase2_data() -> dict:
+    from interp import phase2
+
+    out = phase2.build_data(log=lambda s: print(s, flush=True))
+    store.commit()
+    return out
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=4 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def phase2_run(model: str = "laya") -> dict:
+    from interp import phase2
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    store.reload()
+    agent = load_agent(model, device="cuda")
+    out = phase2.run(agent, Runner(agent), model, log=lambda s: print(s, flush=True))
+    save(f"phase2/{model}", out)
+    store.commit()
+    return {"model": model, "ok": True}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=2 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def phase2_e4b(model: str = "laya") -> dict:
+    from interp import phase2
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    agent = load_agent(model, device="cuda")
+    out = phase2.e4b(agent, Runner(agent), log=lambda s: print(s, flush=True))
+    save(f"phase2/{model}_e4b_exploratory", out)
+    store.commit()
+    return {"ok": True}
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -529,5 +568,11 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
             print(c.get())
     elif task == "debug_b":
         print(debug_b.remote())
+    elif task == "phase2":
+        print(phase2_data.remote())
+        for m in (paths or "laya").split(","):
+            print(phase2_run.remote(m))
+    elif task == "e4b":
+        print(phase2_e4b.remote(paths or "laya"))
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

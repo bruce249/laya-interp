@@ -70,6 +70,14 @@ The factorial is therefore redefined with [MASK] binding held fixed in all four 
 5. **Side effects of the guard:** jailbreak/injection AUROC (done), preset decisions (done), plus calibration on all noul sets.
 6. **Primary metrics:** label-following rate, normal-label accuracy and swap gap.
 
+**Outcome, 2026-10-09.**
+
+- **Timing hypothesis rejected.** Blocking [MASK] → label only in layers 10–14 leaves label-following at 96%. The read is redundant across local layers, with the late band (21–27) most important.
+- **Evidence path confirmed.** It runs through a question-token relay: blocking question → passage drops accuracy to the majority-class rate, and restoring the question tokens at layers 16–17 recovers 91%.
+- **Guard confirmed** on RTE, MultiRC, held-out BoolQ and GPT items, across 5 new label wordings.
+- **Guard failure found:** multi-token labels (32–38% label-following remain).
+- **Exploratory, not confirmatory:** a guard extension that also blocks option text → labels reduces that to 4–13%. It was designed after seeing the confirmatory sets, so it needs a fresh untouched set before it is claimed.
+
 ### Phase 3 · C2 regulator vs amplifier (high priority, ~$1, 0.5 day)
 
 Three interventions on the same items:
