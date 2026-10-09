@@ -71,6 +71,30 @@ def masked_mlp_edit(means, layers, where: str):
     return edits
 
 
+def greedy_mlps(agent, runner, items, means, log=print, K: int = 6) -> list[dict]:
+    """Same rule as laya's search, MLPs only: add the MLP that most increases |log scale| while >= 95% of
+    answers are kept; stop when nothing helps."""
+    encs = [cp.encode_mc(agent, it, "generic") for it in items]
+    base = slot_logits(runner, encs)
+    chosen, cur = [], None
+    for _ in range(K):
+        best, best_s = None, None
+        for l in range(runner.n_layers):
+            if any(c["layer"] == l for c in chosen):
+                continue
+            trial = chosen + [{"kind": "mlp", "layer": l}]
+            e = cf.per_item_effects(base, slot_logits(runner, encs, edits=cf.set_edits(trial, means)))
+            s = {"abs_ls": float(np.abs(e["log_scale"]).mean()), "kept": float(1 - e["argmax_change"].mean())}
+            if s["kept"] >= 0.95 and (best_s is None or s["abs_ls"] > best_s["abs_ls"]):
+                best, best_s = trial[-1], s
+        if best is None or (cur is not None and best_s["abs_ls"] <= cur["abs_ls"] + 1e-3):
+            break
+        chosen.append(best)
+        cur = best_s
+        log(f"[P3 greedy] + MLP L{best['layer']} -> |ls|={best_s['abs_ls']:.3f} kept={best_s['kept']:.3f}")
+    return chosen
+
+
 def run(agent, runner, model: str, log=print) -> dict:
     from .factorial import mc_confirm
     from .runs import RESULTS, mc_items
@@ -80,10 +104,13 @@ def run(agent, runner, model: str, log=print) -> dict:
     main = [it for it in items if it["split"] == "main"]
     sets = {"explore_main": main, "explore_heldout": [it for it in items if it["split"] == "heldout"],
             "confirm": mc_confirm()}
-    greedy = json.loads((RESULTS / "followups/greedy_sets.json").read_text())
-    bset = greedy["B_set"]
-    layers = [c["layer"] for c in bset if c["kind"] == "mlp"]
     means = ab.segment_means(runner, [cp.encode_mc(agent, it, "generic") for it in main[:600]])
+    if model == "laya":
+        greedy = json.loads((RESULTS / "followups/greedy_sets.json").read_text())
+        bset = greedy["B_set"]
+    else:
+        bset = greedy_mlps(agent, runner, main[:400], means, log)
+    layers = [c["layer"] for c in bset if c["kind"] == "mlp"]
     out = {"model": model, "precision": "fp32", "mlp_layers": layers}
     for sname, subset in sets.items():
         encs = [cp.encode_mc(agent, it, "generic") for it in subset]

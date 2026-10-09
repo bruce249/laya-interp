@@ -102,6 +102,28 @@ Three interventions on the same items:
 - Run them on **laya-typed-decisions** as well.
 - Stretch: an option-marker model built on a different encoder family (e.g. DeBERTa-v3-large) with laya's trainer. Use it only for C3, since C1's RoPE manipulation does not transfer.
 
+**Outcome, 2026-10-09.**
+
+- **Verification.** typed-decisions verified against `predict` (5e-5).
+- **C1 replicates:**
+
+  | | typed | multilingual |
+  |---|---|---|
+  | Flips removed by blocking interaction | 6.2 pts | 3.7 pts |
+  | Competition kept under shared positions | 76% | 76% |
+  | Accuracy cost of order-invariance | ≤ 1.4 pts | ≤ 1.4 pts |
+
+- **C3 guard replicates:**
+  - yes/no labels: 90–93% → 1–5%;
+  - multi-token labels: 5–14% left, versus 33–38% in laya.
+- **C3 evidence relay:**
+  - **typed:** clean (restoring question tokens recovers 0.91);
+  - **multilingual:** weaker (0.75), and option text also reads the passage.
+- **Where the label read sits differs by model:**
+  - blocking only layers 21–27 leaves 51% (laya), 23% (typed), 90% (multilingual) label-following;
+  - blocking all local layers removes it in every model.
+- **C2 verdict replicates** (only at the [MASK]s, rescaling reproduces it, temperature beats it). The selected MLPs carry nearly the whole logit scale in typed and multilingual (×0.003–0.007).
+
 ### Phase 5 · Training origin of the label shortcut (conditional, ~$12, 1 day)
 
 Same architecture, init, budget and evaluation; only the label regime in the training data varies:

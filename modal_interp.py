@@ -592,5 +592,11 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
     elif task == "phase3":
         for m in (paths or "laya").split(","):
             print(phase3_run.remote(m))
+    elif task == "phase4":
+        print(verify.remote("typed", 200))
+        calls = [phase1.spawn("typed"), phase2_run.spawn("multilingual"), phase2_run.spawn("typed"),
+                 phase3_run.spawn("multilingual"), phase3_run.spawn("typed")]
+        for c in calls:
+            print(c.get())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

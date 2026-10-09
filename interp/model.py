@@ -8,6 +8,7 @@ CHECKPOINTS = {
     "laya": dict(repo="convaiinnovations/laya", subfolder=None),
     "smolaya": dict(repo="anon767tom/smolaya", subfolder=None),
     "multilingual": dict(repo="convaiinnovations/laya-multilingual", subfolder=None),
+    "typed": dict(repo="convaiinnovations/laya", subfolder="typed-decisions"),
     "ctrl_soft_ce": dict(repo="/store/ckpt/ctrl_soft_ce", subfolder=None),
     "ctrl_rlcd": dict(repo="/store/ckpt/ctrl_rlcd", subfolder=None),
 }
