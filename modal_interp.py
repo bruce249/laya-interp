@@ -582,6 +582,30 @@ def phase5_dryrun() -> str:
     return chr(10).join(out)
 
 
+@app.function(cpu=4, memory=16384, volumes=VOLUMES, timeout=3600, secrets=[OPENAI],
+              env=HF_ENV | {"LLM_BULK": "gpt-5.6-luna", "LLM_CAREFUL": "gpt-5.6-terra"})
+def p8_data() -> dict:
+    import json
+    import os
+
+    from interp import data, phase8
+    from interp.model import load_agent
+
+    path = data.DATA / "conflict_bench.jsonl"
+    if path.exists() and not any(json.loads(l)["source"] == "MNLI" for l in path.read_text().splitlines()[:400]):
+        path.unlink()                          # superseded draft without the MNLI half (never evaluated)
+    if not path.exists():
+        tok = load_agent("laya", device="cpu", eager_attn=False).tok
+        items = phase8.build_benchmark(tok, os.environ["LLM_CAREFUL"], os.environ["LLM_BULK"],
+                                       log=lambda s: print(s, flush=True))
+        data.save_jsonl("conflict_bench.jsonl", items)
+        store.commit()
+    items = data.load_jsonl("conflict_bench.jsonl")
+    return {"n": len(items), "n_contra": sum(1 for it in items if it.get("contra_state")),
+            "sources": {s: sum(it["source"] == s for it in items) for s in ("MNLI", "QNLI")},
+            "gold_rate": sum(it["gold"] for it in items) / len(items), "sha256": phase8.freeze(items)}
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -678,5 +702,7 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
             print(c.get())
     elif task == "p5dry":
         print(phase5_dryrun.remote())
+    elif task == "p8data":
+        print(p8_data.remote())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

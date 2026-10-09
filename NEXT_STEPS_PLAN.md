@@ -312,3 +312,12 @@ Shuffled noul option order in every arm; same data, loss (RLCD), init and budget
 
 - No new unrelated analyses.
 - C1, C2, C4 and C5 remain framed as secondary, at their current evidence level.
+
+**Amendment, 2026-10-09 (before any evaluation on the benchmark).** The MultiRC half of P1 is infeasible: MultiRC validation has only about 80 distinct paragraphs, and all of them are already used by `noul_confirm`. It is replaced by 300 MNLI validation-matched pairs (entailment vs contradiction, neutral dropped; "Does the text imply that …?"). These are human-written and have never been used. The draft file without MNLI was never evaluated and is deleted. QNLI items are unchanged.
+
+**P1 benchmark frozen, 2026-10-09, before any evaluation.** `data/conflict_bench.jsonl`:
+
+- 600 items (MNLI 300, QNLI 300);
+- 519 with a verified contradicting edit;
+- gold "holds" rate 0.543;
+- SHA-256 `cea5547fffab4c62e77bf244245c1b63db0e94d2a206fee8c2a82229ceafd810`.
