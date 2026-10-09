@@ -70,6 +70,10 @@ class Runner:
         blocked = (oq > 0) & (ok > 0) & (oq != ok)
         if mode == "masked_parallel":
             blocked = blocked | ((oq == 0) & (ok > 0))
+        elif mode == "bind_masks":
+            # binding only: a [MASK] may not read other options; option text may still read other options
+            from .inputs import SEG_MASK
+            blocked = blocked & (batch["segment"] == SEG_MASK)[:, :, None]
         elif mode != "shipped_parallel":
             raise ValueError(f"unknown mask mode {mode!r}")
         alt = {"full": base_full & ~blocked, "sliding": base_full & ~blocked & near}
@@ -244,7 +248,7 @@ class Runner:
 
 @torch.no_grad()
 def slot_logits(runner: Runner, encs, *, batch_size: int = 128, parallel_positions: bool = False,
-                **forward_kwargs) -> list:
+                position_fn=None, **forward_kwargs) -> list:
     """Raw logits per item, in slot order (numpy, length k). Sorted by length to limit padding."""
     from .inputs import collate, to_device
 
@@ -253,8 +257,8 @@ def slot_logits(runner: Runner, encs, *, batch_size: int = 128, parallel_positio
     pad = runner.agent.tok.pad_token_id
     for start in range(0, len(order), batch_size):
         idx = order[start:start + batch_size]
-        batch = to_device(collate([encs[i] for i in idx], pad, parallel_positions=parallel_positions),
-                          runner.device)
+        batch = to_device(collate([encs[i] for i in idx], pad, parallel_positions=parallel_positions,
+                                  position_fn=position_fn), runner.device)
         logits, _, _ = runner.forward(batch, **forward_kwargs)
         logits = logits.float().cpu().numpy()
         for row, i in enumerate(idx):

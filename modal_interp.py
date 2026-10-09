@@ -406,6 +406,58 @@ def label_guard() -> str:
     return "ok"
 
 
+@app.function(cpu=2, memory=8192, volumes=VOLUMES, timeout=1800, env=HF_ENV)
+def freeze_confirm() -> dict:
+    from collections import Counter
+
+    from interp import factorial
+
+    items = factorial.mc_confirm()
+    store.commit()
+    return {"n": len(items), "sources": dict(Counter(it["source"] for it in items))}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=3 * 3600, env=HF_ENV, scaledown_window=60, memory=32768)
+def phase1(model: str) -> dict:
+    from interp import factorial
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    store.reload()
+    agent = load_agent(model, device="cuda")
+    out = factorial.run(agent, Runner(agent), model, log=lambda s: print(s, flush=True))
+    save(f"phase1/{model}", out)
+    store.commit()
+    return {"model": model, "ok": True}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=1800, env=HF_ENV)
+def debug_b() -> str:
+    import torch
+
+    from interp import competition as cp
+    from interp.hooks import Runner
+    from interp.inputs import collate, to_device
+    from interp.model import load_agent
+    from interp.runs import mc_items
+
+    agent = load_agent("laya", device="cuda")
+    r = Runner(agent)
+    items = [it for it in mc_items() if it["split"] == "main"][:3]
+    out = []
+    for it in items:
+        e = cp.encode_mc(agent, it, "generic")
+        for name, kw, pp in (("base", {}, False), ("B", {}, True)):
+            b = to_device(collate([e], agent.tok.pad_token_id, parallel_positions=pp), r.device)
+            lg, _, cache = r.forward(b, cache=["enc_final", "L0.resid_pre", "L1.resid_pre"], **kw)
+            out.append(f"{name} k={e.k} logits={lg[0, :e.k].tolist()}")
+            out.append(f"   pos[:60]={b['position_ids'][0, :60].tolist()}")
+            out.append(f"   markers={e.markers} head_len={e.head_len} len={len(e.ids)} nan_enc={torch.isnan(cache['enc_final']).any().item()} "
+                       f"nan_L1={torch.isnan(cache['L1.resid_pre']).any().item()}")
+    return chr(10).join(out)
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -468,5 +520,14 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
             print(c.get())
     elif task == "label_guard":
         print(label_guard.remote())
+    elif task == "phase1":
+        print(freeze_confirm.remote())
+        models = (paths or "laya,smolaya,multilingual,ctrl_soft_ce,ctrl_rlcd,ctrl_soft_ce_s1,ctrl_soft_ce_s2,"
+                           "ctrl_rlcd_s1,ctrl_rlcd_s2").split(",")
+        calls = [phase1.spawn(m) for m in models]
+        for c in calls:
+            print(c.get())
+    elif task == "debug_b":
+        print(debug_b.remote())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

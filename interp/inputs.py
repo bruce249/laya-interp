@@ -63,7 +63,7 @@ def encode(agent, state, qdef: dict, max_len: int | None = None, head_max_len: i
     )
 
 
-def collate(encs: list[Encoded], pad_id: int, parallel_positions: bool = False) -> dict:
+def collate(encs: list[Encoded], pad_id: int, parallel_positions: bool = False, position_fn=None) -> dict:
     """Tensors for `Runner.forward`. `option_ids` is s+1 on slot s tokens, 0 elsewhere."""
     from laya.common import parallel_layout
 
@@ -102,6 +102,8 @@ def collate(encs: list[Encoded], pad_id: int, parallel_positions: bool = False) 
         batch["alt_position_ids"][i, :size] = layout
         if parallel_positions:
             batch["position_ids"][i, :size] = layout
+        elif position_fn is not None:
+            batch["position_ids"][i, :size] = torch.tensor(position_fn(e))
     names = {k for e in encs for k in e.meta.get("masks", {})}
     for name in names:
         batch.setdefault(name, torch.zeros((n, length), dtype=torch.bool))
