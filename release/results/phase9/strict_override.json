@@ -1,0 +1,10 @@
+{
+  "n_originals": 145,
+  "n_deletion_only": 2,
+  "n_clean": 1,
+  "orig_flagged": 1.0,
+  "edited_flagged": 1.0,
+  "n_edited_flagged": 1,
+  "median_kept_frac": 0.7272727272727273,
+  "mean_logodds_drop": -0.3125
+}

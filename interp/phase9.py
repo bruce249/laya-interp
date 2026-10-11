@@ -147,3 +147,40 @@ def strict_override_removal(agent, runner, careful: str, bulk: str, log=print) -
                     "mean_logodds_drop": float((lo_o - lo_e).mean())})
     log(f"[p9b strict] {out}")
     return out
+
+
+def _words(t: str) -> list[str]:
+    import re
+    return re.findall(r"[A-Za-z0-9']+", t.lower())
+
+
+def rescore_strict_amended(agent, runner, log=print) -> dict:
+    """Amended Q5 filter (see NEXT_STEPS_PLAN.md): strip an echoed 'Prompt:' prefix, compare alphanumeric words only."""
+    import re
+
+    from . import data
+    from . import safety as sf
+
+    rows = data.load_jsonl("jb_strict_counterfactuals.jsonl")
+    clean = []
+    for r in rows:
+        e = re.sub(r"^\s*Prompt:\s*", "", r["edited"])
+        a, b = _words(r["original"]), _words(e)
+        ok = bool(b) and b != a and all(op in ("equal", "delete") for op, *_ in
+                                        difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes())
+        r["edited_amended"], r["deletion_only_amended"] = e, ok
+        if ok and r["override_present"] is False:
+            clean.append(r)
+    out = {"n_originals": len(rows), "n_deletion_only_original_filter": sum(bool(r["deletion_only"]) for r in rows),
+           "n_deletion_only_amended": sum(r["deletion_only_amended"] for r in rows),
+           "n_override_free": sum(r["override_present"] is False for r in rows), "n_clean": len(clean)}
+    if clean:
+        lo_o = sf.score_texts(agent, runner, [r["original"] for r in clean])
+        lo_e = sf.score_texts(agent, runner, [r["edited_amended"] for r in clean])
+        kept = [len(_words(r["edited_amended"])) / max(1, len(_words(r["original"]))) for r in clean]
+        out.update({"orig_flagged": float((lo_o > 0).mean()), "edited_flagged": float((lo_e > 0).mean()),
+                    "n_edited_flagged": int((lo_e > 0).sum()), "median_kept_frac": float(np.median(kept)),
+                    "mean_logodds_drop": float((lo_o - lo_e).mean())})
+    data.save_jsonl("jb_strict_counterfactuals_amended.jsonl", rows)
+    log(f"[p9b strict amended] {out}")
+    return out

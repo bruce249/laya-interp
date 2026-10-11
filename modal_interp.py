@@ -824,6 +824,20 @@ def p9b_strict() -> dict:
     return out
 
 
+@app.function(gpu="H100", volumes=VOLUMES, timeout=1800, env=HF_ENV, scaledown_window=60, memory=32768)
+def p9b_strict_amended() -> dict:
+    from interp import phase9
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    agent = load_agent("laya", device="cuda")
+    out = phase9.rescore_strict_amended(agent, Runner(agent), log=lambda s: print(s, flush=True))
+    save("phase9/strict_override_amended", out)
+    store.commit()
+    return out
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -989,5 +1003,7 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
         calls.append(p9b_strict.spawn())
         for c in calls:
             print(c.get())
+    elif task == "p9bstrict2":
+        print(p9b_strict_amended.remote())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

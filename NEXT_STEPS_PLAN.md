@@ -458,3 +458,16 @@ Shuffled noul option order in every arm; same data, loss (RLCD), init and budget
 ## Q7 · Audit of the second benchmark's contradicting edits
 
 - 60 random items (seed 0), judged the same way as the first-benchmark sheet.
+
+**Amendment to Q5, 2026-10-12, after the first run and before any re-scoring.** The deletion-only check passed only 2 of 145 edits. Diagnosis:
+
+- 103 failures come from GPT echoing the `Prompt:` prefix that our own input wrapper added.
+- Most of the rest are punctuation attached to deleted words (e.g. "rules." → ".").
+
+Amended filter:
+
+- Strip a leading echoed `Prompt:` from the edit.
+- Compare alphanumeric word tokens only, ignoring punctuation. The test remains word-level deletion-only.
+- The second-model override check is unchanged.
+
+The edits themselves are reused as generated; no new LLM calls are made. Both the original (failed) and the amended counts are reported.
