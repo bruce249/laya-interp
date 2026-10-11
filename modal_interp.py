@@ -790,6 +790,40 @@ def jb_audit_rescore(audit_rows: list) -> dict:
     return out
 
 
+@app.function(gpu="H100", volumes=VOLUMES, timeout=3 * 3600, env=HF_ENV, scaledown_window=60, memory=65536)
+def p9b_dir(name: str) -> dict:
+    from interp import data, phase9
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    store.reload()
+    agent = load_agent(name, device="cuda")
+    out = phase9.direction_ablation(agent, Runner(agent), data.load_jsonl("conflict_bench.jsonl"),
+                                    data.load_jsonl("conflict_bench2.jsonl"), name, log=lambda s: print(s, flush=True))
+    save(f"phase9/dir_{name}", out)
+    store.commit()
+    return {"name": name, "ok": True}
+
+
+@app.function(gpu="H100", volumes=VOLUMES, timeout=3600, env=HF_ENV | {"LLM_BULK": "gpt-5.6-luna",
+              "LLM_CAREFUL": "gpt-5.6-terra"}, scaledown_window=60, memory=32768, secrets=[OPENAI])
+def p9b_strict() -> dict:
+    import os
+
+    from interp import phase9
+    from interp.hooks import Runner
+    from interp.model import load_agent
+    from interp.runs import save
+
+    agent = load_agent("laya", device="cuda")
+    out = phase9.strict_override_removal(agent, Runner(agent), os.environ["LLM_CAREFUL"], os.environ["LLM_BULK"],
+                                         log=lambda s: print(s, flush=True))
+    save("phase9/strict_override", out)
+    store.commit()
+    return out
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -948,5 +982,12 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
         (pathlib.Path(__file__).parent / "release" / "results" / "phase9" / "jb_audit_rescore.json").write_text(
             json.dumps(res, indent=1), encoding="utf-8")
         print(json.dumps(res, indent=1))
+    elif task == "p9b":
+        calls = [p8_train.spawn(r, sd, "FacebookAI/roberta-large", 1e-5) for r in ("planted", "baseline")
+                 for sd in (3, 4, 5)]
+        calls += [p9b_dir.spawn(n) for n in ("laya", "p5_planted_s1", "p5_planted_s5")]
+        calls.append(p9b_strict.spawn())
+        for c in calls:
+            print(c.get())
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

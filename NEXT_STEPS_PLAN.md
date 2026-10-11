@@ -428,3 +428,33 @@ Shuffled noul option order in every arm; same data, loss (RLCD), init and budget
   - **Edits that also cut the persona or setup:** 29/32 flagged.
   - **Edits that kept the override:** 7/7 flagged.
 - **Reading.** Laya responds to the residual role-play framing or harmful request, not to the override instruction itself. This is exploratory; the style test remains the clean test.
+
+# Phase 9b · Closing gaps (frozen 2026-10-12, before any run)
+
+## Q4 · RoBERTa-large, seeds 3–5
+
+- **Runs:** planted and baseline, same recipe as Q3 (encoder_lr 1e-5). Together with Q3 this gives 6 vs 6 seeds.
+- **Learned criterion:** unchanged (BoolQ held-out ≥ 0.70); every run is reported.
+- **Prediction:** planted label-following exceeds baseline. Exact two-sided permutation p < 0.05 over the 6 vs 6 seeds that learned.
+
+## Q5 · C4 override removal, strict version
+
+- **Edit:** gpt-5.6-terra edits the same 145 flagged jailbreaks, deleting only override spans (rules: delete, never rewrite).
+- **Acceptance filter, fixed now:**
+  - word-level deletion-only, checked in code;
+  - gpt-5.6-luna judges that no override remains.
+- **Report:** laya's flag rate on the accepted edits, with a Wilson 95% CI.
+- **Prediction:** none. This replaces the withdrawn 82% with a cleaner estimate.
+
+## Q6 · Label-direction ablation (exploratory)
+
+- **Direction:** for each layer, the mean residual at the "holds" [MASK] with normal yes/no labels minus with swapped labels. It is fitted on `conflict_bench.jsonl` (600 items).
+- **Ablation:** project that direction out at every [MASK] position in every layer, evaluated on `conflict_bench2.jsonl`.
+- **Control:** random unit directions per layer (seed 0).
+- **Combined condition:** direction ablation plus the extended all-layer guard.
+- **Models:** laya, plus planted s1 and s5 (the seeds where the attention guard was not a clean fix).
+- **Success criterion, fixed now:** yes/no label-following ≤ 10% with an accuracy drop ≤ 5 points.
+
+## Q7 · Audit of the second benchmark's contradicting edits
+
+- 60 random items (seed 0), judged the same way as the first-benchmark sheet.
