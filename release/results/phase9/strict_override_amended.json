@@ -1,0 +1,12 @@
+{
+  "n_originals": 145,
+  "n_deletion_only_original_filter": 2,
+  "n_deletion_only_amended": 104,
+  "n_override_free": 97,
+  "n_clean": 62,
+  "orig_flagged": 1.0,
+  "edited_flagged": 1.0,
+  "n_edited_flagged": 62,
+  "median_kept_frac": 0.7857142857142857,
+  "mean_logodds_drop": 0.8069556355476379
+}

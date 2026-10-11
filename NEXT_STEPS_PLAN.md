@@ -471,3 +471,22 @@ Amended filter:
 - The second-model override check is unchanged.
 
 The edits themselves are reused as generated; no new LLM calls are made. Both the original (failed) and the amended counts are reported.
+
+**Phase 9b outcomes (2026-10-12).**
+
+- **Q4, RoBERTa seeds 3–5. Prediction failed.**
+  - All 12 runs learned the task (BoolQ 0.710–0.820).
+  - Planted label-following: 97.8, 82.3, 92.4, 89.6, 56.5, 47.0% (mean 77.6%).
+  - Baseline label-following: 66.8, 4.6, 6.7, 71.7, 66.9, 76.7% (mean 48.9%).
+  - Exact permutation p = 0.113, against the predicted p < 0.05.
+  - 4 of 6 RoBERTa baselines learn the shortcut. The [MASK]→label block leaves ≤ 12% in 11 of 12 runs (planted s2: 37.6%).
+- **Q5, strict override removal (amended filter).**
+  - 104 of 145 edits are deletion-only; 97 were judged override-free; 62 pass both.
+  - Laya flags 62/62 (Wilson 95% CI 94.2–100%); mean log-odds drop 0.81.
+  - Manual keyword inspection found 3 of the 62 keep part of a jailbreak trick. Without them, 59/59.
+- **Q6, label-direction ablation. Criterion failed in all 3 models.**
+  - Label-following falls to 0.0%, but accuracy falls to 0.522: the model always answers "does not hold" (always-no accuracy on benchmark 2 is 0.522).
+  - The random-direction control leaves label-following unchanged.
+  - Reading: the normal-minus-swapped direction at the [MASK] is the answer direction itself.
+- **Q7, second-benchmark edits audit (Claude).** Flip the answer 58/60; minimal 55/60.
+- **Write-up.** Paper version: `release/report/paper.pdf`, built by `release/scripts/build_paper.py`.

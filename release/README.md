@@ -8,6 +8,8 @@ Everything needed to check and rebuild the results of the laya mechanistic-inter
 |---|---|
 | `report/report.pdf`, `report/report.html` | The final report. Every number and figure is computed from `results/` by `scripts/build_report.py`. |
 | `scripts/build_report.py` | Rebuilds the report from `results/`: `python release/scripts/build_report.py` |
+| `report/paper.pdf`, `report/paper.html` | The paper version (current main write-up), built from the same `results/` by `scripts/build_paper.py`. |
+| `scripts/build_paper.py` | Rebuilds the paper: `python release/scripts/build_paper.py` (reuses the data and figure code of `build_report.py`). |
 | `results/` | Raw aggregate results (JSON, plus small pickles of per-item arrays), one folder per experiment |
 | `data/` | Exact item sets and splits. See "Data" below. |
 | `../modal_interp.py`, `../interp/` | The code that produced `results/` (runs on Modal) |

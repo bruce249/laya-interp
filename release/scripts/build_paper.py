@@ -4,6 +4,7 @@ Data loading, figures and statistics are shared with build_report.py (everything
 here unchanged); only the text and structure differ. Every number in the paper is computed from a results file.
 """
 
+import json
 import pathlib
 import shutil
 import subprocess
@@ -41,7 +42,11 @@ def wilson(k, n, z=1.96):
 
 
 DIR = {n: J(f"phase9/dir_{n}.json") for n in ("laya", "p5_planted_s1", "p5_planted_s5")}
-STRICT = J("phase9/strict_override.json")
+STRICT0 = J("phase9/strict_override.json")           # pre-registered filter (failed on a formatting artifact)
+STRICT = J("phase9/strict_override_amended.json")   # amended filter, logged before re-scoring
+STRICT_RESIDUAL = 3  # clean edits that, on manual inspection of keyword hits, still keep part of a jailbreak trick
+_b2 = [json.loads(l) for l in (ROOT / "data" / "conflict_bench2.jsonl").read_text(encoding="utf-8").split(chr(10)) if l.strip()]
+always_no_acc = 1 - np.mean([it["gold"] for it in _b2])
 ROB9 = {f"{r}_s{i}": J(f"phase8/rob_p9rob_{r}_s{i}.json") for r in ("planted", "baseline") for i in range(6)}
 _rlf = lambda k: ROB9[k]["eval"]["conflict_bench"]["yes_no/none"]["label_following"]  # noqa: E731
 _rboolq = lambda k: ROB9[k]["eval"]["boolq_heldout"]["yes_no/none"]["acc_normal"]  # noqa: E731
@@ -59,7 +64,10 @@ tr = B8["none"]["yes_no"]["real"]
 rq = P8["laya"]["restoration_ci"]
 best_l = int(np.argmax([x["median"] for x in rq["question"]]))
 qb = rq["question"][best_l]
-sk_lo, sk_hi = wilson(STRICT["n_edited_flagged"], STRICT["n_clean"]) if STRICT.get("n_clean") else (0, 0)
+sk_lo, sk_hi = wilson(STRICT["n_edited_flagged"], STRICT["n_clean"])
+_kx, _nx = STRICT["n_edited_flagged"] - STRICT_RESIDUAL, STRICT["n_clean"] - STRICT_RESIDUAL
+skx_lo, skx_hi = wilson(_kx, _nx)
+rob_bl_hi = sum(v > 0.5 for v in rob_bl)
 AUDIT = [  # (sheet, check, k, n)  -- Claude audit of random samples (audit/claude_filled), not yet human-reviewed
     ("Contradicting edits, benchmark 1", "edit flips the answer", 56, 60),
     ("Contradicting edits, benchmark 2", "edit flips the answer", 58, 60),
@@ -99,8 +107,11 @@ same number of random edges changes nothing; the result replicates on two siblin
 In a dose study of {sum(len(v) for v in DOSE_ARMS.values())} retrained ModernBERT models, the shortcut appears whenever the label
 word identifies the option during training (planted mean {pct(np.mean(_pl), 1)} vs baseline {pct(np.mean(_bl), 1)}; exact
 permutation p = {p8_perm:.4f}), even when it is redundant with the option text, and that randomising label words in training prevents it
-({pct(np.mean(_d0), 1)} label-following). The training-origin result replicates in RoBERTa-large. The inference-time guard does
-not transfer cleanly to every retrained model: a pre-registered prediction about it failed. Order sensitivity, confidence and
+({pct(np.mean(_d0), 1)} label-following). In RoBERTa-large the shortcut appears in planted and in most baseline seeds, so the
+pre-registered planted-vs-baseline difference was not significant there, while the same attention block still removes it. Three
+other pre-registered predictions failed: a redundant label was predicted to go unused, the guard does not transfer cleanly to
+every retrained ModernBERT seed, and projecting
+out a learned label direction removes the answer along with the label. Order sensitivity, confidence and
 jailbreak detection are analysed as supporting findings. Hypotheses were frozen before confirmatory runs, and claims that
 failed are reported as such.</div>""")
 
@@ -118,10 +129,10 @@ never-seen wordings ("right"/"wrong": {lf(B8['none']['right_wrong']['real'])}).<
 passage → question tokens → [MASK].</li>
 <li><b>Fix at inference.</b> A one-edge-class attention guard removes the shortcut in all three laya checkpoints; matched
 control edges do not.</li>
-<li><b>Origin.</b> Retraining shows which data create the shortcut, a dose response, a replication in RoBERTa-large, and a
-training-time fix.</li>
-<li><b>Limits.</b> On retrained models the guard is incomplete in some seeds (a pre-registered prediction failed); we report
-where and why.</li></ol>
+<li><b>Origin.</b> Retraining shows which data create the shortcut, a dose response, a training-time fix, and that
+RoBERTa-large learns the shortcut even more readily.</li>
+<li><b>Limits.</b> Four pre-registered predictions failed (redundant labels unused, guard transfer, label-direction ablation, RoBERTa planted vs
+baseline); we report where and why.</li></ol>
 <p>Secondary claims (C1 order sensitivity, C2 confidence, C4 jailbreak detection, C5 training objective) are in Section 5.</p>""")
 
 # ---------------------------------------------------------------- 2 methods
@@ -157,7 +168,8 @@ same number of description edges, and a sham [MASK]→[CLS] edge.</li>
 <li><b>Seed-level tests</b> treat each trained model as one unit: per-seed values are listed and compared with an exact
 two-sided permutation test.</li>
 <li><b>Pre-registration.</b> Each confirmatory test's data, interventions and prediction were written to
-<code>NEXT_STEPS_PLAN.md</code> and committed before it ran. Analyses added afterwards are labelled exploratory.</li></ul>""")
+<code>NEXT_STEPS_PLAN.md</code> before it ran; from the confirmatory benchmarks on, each pre-registration is in a git
+commit that precedes its results. Analyses added afterwards are labelled exploratory.</li></ul>""")
 
 # ---------------------------------------------------------------- 3 the shortcut and its circuit
 ivrows = []
@@ -287,8 +299,11 @@ S.append("<h3>4.5 Removing a label direction instead of an edge (exploratory)</h
 <p>For each layer we fitted one direction on benchmark 1: the mean residual at the "holds" [MASK] with normal labels minus
 with swapped labels. We then projected it out at every [MASK] in every layer, and evaluated on benchmark 2. The success criterion,
 fixed in advance, was label-following ≤ 10% with an accuracy drop ≤ 5 points. Direction ablation alone met it in {n_ok_dir} of
-{len(DIR)} models; combined with the extended all-layer guard, in {n_ok_comb} of {len(DIR)}. A random direction per layer is the
-control.</p>""" + table(["Benchmark 2: yes/no label-following (accuracy)", "None", "Direction ablation",
+{len(DIR)} models; combined with the extended all-layer guard, in {n_ok_comb} of {len(DIR)}. Label-following does fall to zero,
+but only because the model stops answering: accuracy falls to {f3(DIR['laya']['direction_ablation']['yes_no']['acc_normal'])}, which
+is exactly the accuracy of always answering "does not hold" on benchmark 2 ({f3(always_no_acc)}). A random direction per layer
+changes nothing. The direction that separates normal from swapped labels at the [MASK] is the answer direction itself: in this
+model, "what the label says" and "what the answer is" share one linear direction, so they cannot be separated by projection.</p>""" + table(["Benchmark 2: yes/no label-following (accuracy)", "None", "Direction ablation",
                          "Random-direction control", "Direction ablation + extended guard"], dir_rows))
 
 rob_rows = []
@@ -302,7 +317,11 @@ S.append("<h3>4.6 A second architecture: RoBERTa-large</h3>" + f"""
 of 6 runs at laya's 2.5e-5 failed to learn), 6 planted and 6 baseline seeds, all reported. {sum(rob_learned.values())} of 12
 learned the task (BoolQ ≥ 0.70). Among them, planted label-following averages {pct(np.mean(rob_pl), 1)} vs {pct(np.mean(rob_bl), 1)}
 for baseline (exact p = {p_rob6:.4f}, {len(rob_pl)} vs {len(rob_bl)} seeds). The [MASK]→label block is applied in all layers
-(RoBERTa has no local/global split); a fidelity check confirms the unblocked path matches the plain model exactly.</p>""" + table(
+(RoBERTa has no local/global split); a fidelity check confirms the unblocked path matches the plain model exactly.</p>
+<p>The pre-registered prediction (planted &gt; baseline, p &lt; 0.05) <b>failed</b>: {rob_bl_hi} of {len(rob_bl)} baseline seeds also learned
+the shortcut (label-following above 50%). In RoBERTa, default training with fixed "true"/"false" labels is enough to produce it in
+most seeds. The [MASK]→label block brings {sum(_bl2 <= 0.12 for _bl2 in [ROB9[k]["eval"]["conflict_bench"]["yes_no/label"]["label_following"] for k in ROB9])}
+of 12 runs to 12% or less.</p>""" + table(
     ["RoBERTa-large (lr 1e-5)", "BoolQ accuracy", "Label-following (bench 1)", "With [MASK]→label block",
      "Accuracy, none → question→passage blocked"], rob_rows))
 
@@ -350,10 +369,14 @@ early-decodable, late-decisive timing Wen et al. (2026) report for prompt-inject
 <li><b>Style test.</b> The same 150 harmless requests are flagged {pct(STYLE['jailbreak']['flag_rate_plain'], 1)} written plainly and
 {pct(STYLE['jailbreak']['flag_rate_styled'], 1)} written in jailbreak style (persona, drama, no override); for the injection question
 {pct(STYLE['injection']['flag_rate_plain'], 1)} vs {pct(STYLE['injection']['flag_rate_styled'], 1)}.</li>
-<li><b>Override removal (strict, pre-registered).</b> Of {STRICT['n_originals']} flagged jailbreaks, {STRICT['n_clean']} could have their
-override deleted with a deletion-only edit (checked in code) that a second model judged override-free. Laya still flags
-{STRICT.get('n_edited_flagged', 0)} of them ({pct(STRICT.get('edited_flagged', 0), 1)}, Wilson 95% CI {pct(sk_lo, 1)}–{pct(sk_hi, 1)}).
-The earlier, looser version of this test (82%) is withdrawn: an audit showed its edits removed far more than the override.</li>
+<li><b>Override removal (strict, pre-registered, amended).</b> gpt-5.6-terra was told to delete only override spans from
+{STRICT['n_originals']} flagged jailbreaks. The pre-registered deletion-only check passed just {STRICT0['n_deletion_only']} edits, mostly
+because the model echoed our input's "Prompt:" prefix and left punctuation from deleted words; with the amendment logged before re-scoring (strip the echo, compare words only),
+{STRICT['n_deletion_only_amended']} are deletion-only and {STRICT['n_clean']} of those were judged override-free by gpt-5.6-luna. Laya still
+flags {STRICT['n_edited_flagged']} of {STRICT['n_clean']} ({pct(STRICT['edited_flagged'])}, Wilson 95% CI {pct(sk_lo, 1)}–{pct(sk_hi, 1)});
+the mean log-odds drops by only {STRICT['mean_logodds_drop']:.2f}. On manual inspection {STRICT_RESIDUAL} of these edits keep part of a
+jailbreak trick; without them laya flags {_kx} of {_nx} (CI {pct(skx_lo, 1)}–{pct(skx_hi, 1)}). Removing the override barely moves
+laya. An earlier, looser version of this test (82%) is withdrawn: its edits removed far more than the override.</li>
 <li>Adding the jailbreak direction at the layer-{STEER['best_specific']['layer']} [MASK]s raises benign prompts flagged from
 {pct(STEER['base']['benign_flagged'])} to {pct(STEER['best_specific']['benign_flagged'])}.</li></ul>
 <p>Unlike the intent-tracking late layer described by Wen et al., laya's decision follows surface style.</p>""")
@@ -368,11 +391,13 @@ S.append("<h3>5.4 C5: training objective</h3>" + table(
 # ---------------------------------------------------------------- 6 discussion, related work, limitations
 S.append(f"""<h2>6 · Discussion</h2>
 <p><b>For practitioners.</b> When answer options carry words with meaning, an option-scoring encoder can learn to answer from
-those words. In our retraining this happened whenever the label word identified the option during training, even when the
-option text made it redundant. Two remedies work in different settings:</p><ul>
+those words. In our retraining this happened in every seed when the label word was the reliable cue to the option (planted: 6 of 6),
+and often even when the option text made it redundant (ModernBERT D1: {sum(v > 0.5 for v in _d1)} of 6 seeds; RoBERTa baseline:
+{rob_bl_hi} of {len(rob_bl)}). Two remedies work in different settings:</p><ul>
 <li>For a deployed laya checkpoint, the attention guard removes the behaviour at a cost of {100 * (B8['none']['yes_no']['real']['acc_normal'] - B8['guard']['yes_no']['real']['acc_normal']):.1f} accuracy points on benchmark 1 and is
 available as a drop-in wrapper.</li>
-<li>For a new model, randomising label words during training prevented the shortcut in every seed we trained.</li></ul>
+<li>For a new model, randomising label words during training prevented the shortcut in all 3 ModernBERT seeds we trained
+(not yet tested in RoBERTa).</li></ul>
 <p><b>On mechanistic fixes.</b> The guard was derived from laya's internals and transfers to its sibling checkpoints, but not
 cleanly to every retrained model: the same edge classes carry the label, in different layers, and in some seeds they are
 entangled with normal answering. A fix found in one model is a hypothesis about the next one, not a guarantee.</p>""")
@@ -393,7 +418,8 @@ S.append("""<h2>8 · Limitations</h2><ul>
 <li>GPT-made data (contradicting edits, some items, style pairs, override edits) were checked by a second GPT model and by a
 Claude audit of random samples (Appendix A). The flagged rows have not yet been reviewed by a person.</li>
 <li>Some arms have 3 seeds (D0, D2, D3, the earlier regimes); the training-time fix rests on 3 seeds.</li>
-<li>The direction ablation (4.5) is exploratory and was tested on three models.</li></ul>
+<li>The direction ablation (4.5) was tested on three models and failed its criterion in all three.</li>
+<li>The strict override test (5.3) needed an amendment to its filter after the first run; both counts are reported.</li></ul>
 <h2>9 · Corrections made during the study</h2><ul>
 <li>The early-timing account of label reading was wrong; the read is redundant and mostly late.</li>
 <li>"A confidence regulator" became "a logit amplifier" under the pre-registered rule.</li>
@@ -403,6 +429,8 @@ Claude audit of random samples (Appendix A). The flagged rows have not yet been 
 <li>The prediction that a redundant label would not be used was wrong (4 of 6 seeds use it).</li>
 <li>The prediction that an all-layer guard would transfer to 5 of 6 retrained seeds failed (3 of 6).</li>
 <li>"Laya flags 82% after only the override is removed" was withdrawn after an audit; replaced by the strict test in 5.3.</li>
+<li>"The training-origin result replicates in RoBERTa" (from 3 seeds) was wrong: with 6 seeds most RoBERTa baselines also learn
+the shortcut.</li>
 <li>The planned position-vs-token test was an identity by construction, not evidence.</li></ul>""")
 
 S.append(f"""<h2>10 · Reproducibility and cost</h2>
