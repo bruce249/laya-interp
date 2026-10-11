@@ -756,6 +756,40 @@ def p9_bench(name: str) -> dict:
     return {"name": name, "ok": True}
 
 
+@app.function(gpu="H100", volumes=VOLUMES, timeout=1800, env=HF_ENV, scaledown_window=60, memory=32768)
+def jb_audit_rescore(audit_rows: list) -> dict:
+    """Re-score laya on the GPT counterfactual jailbreaks, split by the audit verdicts (Phase 9 audit follow-up)."""
+    import numpy as np
+
+    from interp import data
+    from interp import safety as sf
+    from interp.hooks import Runner
+    from interp.model import load_agent
+
+    agent = load_agent("laya", device="cuda")
+    runner = Runner(agent)
+    cfs = data.load_jsonl("jb_counterfactuals.jsonl")
+    lo_o = sf.score_texts(agent, runner, [c["original"] for c in cfs])
+    lo_e = sf.score_texts(agent, runner, [c["edited"] for c in cfs])
+    norm = lambda t: " ".join(t.split())  # noqa: E731
+    idx = {norm(c["original"]): i for i, c in enumerate(cfs)}
+    out = {"n_all": len(cfs), "all_orig_flagged": float((lo_o > 0).mean()),
+           "all_edited_flagged": float((lo_e > 0).mean()), "matched": 0, "groups": {}}
+    groups = {"audited_all": lambda r: True, "override_removed": lambda r: r["o"] == "y",
+              "clean_only_override_removed": lambda r: r["o"] == "y" and r["u"] == "y",
+              "override_removed_but_more_cut": lambda r: r["o"] == "y" and r["u"] == "n",
+              "override_remains": lambda r: r["o"] == "n"}
+    hits = [(r, idx.get(norm(r["original"]))) for r in audit_rows]
+    out["matched"] = sum(i is not None for _, i in hits)
+    for g, f in groups.items():
+        ii = [i for r, i in hits if i is not None and f(r)]
+        if ii:
+            out["groups"][g] = {"n": len(ii), "orig_flagged": float((lo_o[ii] > 0).mean()),
+                                "edited_flagged": float((lo_e[ii] > 0).mean()),
+                                "n_edited_flagged": int((lo_e[ii] > 0).sum())}
+    return out
+
+
 @app.local_entrypoint()
 def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int = 1, end: int = 200):
     if task == "inspect":
@@ -900,5 +934,19 @@ def main(task: str = "inspect", paths: str = "", pattern: str = "", start: int =
         calls = [p9_bench.spawn(n) for n in names]
         for c in calls:
             print(c.get())
+    elif task == "jbaudit":
+        import csv
+        import pathlib
+        import json
+        root = pathlib.Path(__file__).parent / "audit"
+        rows = list(csv.DictReader(open(root / "jailbreak_rewrites_SENSITIVE.csv", encoding="utf-8-sig")))
+        filled = list(csv.DictReader(open(root / "claude_filled" / "jailbreak_rewrites_SENSITIVE.csv", encoding="utf-8-sig")))
+        payload = [{"original": r["original_prompt"], "o": f["CHECK_override_fully_removed(y/n)"],
+                    "u": f["CHECK_otherwise_unchanged(y/n)"]} for r, f in zip(rows, filled)]
+        res = jb_audit_rescore.remote(payload)
+        (pathlib.Path(__file__).parent / "release" / "results" / "phase9").mkdir(parents=True, exist_ok=True)
+        (pathlib.Path(__file__).parent / "release" / "results" / "phase9" / "jb_audit_rescore.json").write_text(
+            json.dumps(res, indent=1), encoding="utf-8")
+        print(json.dumps(res, indent=1))
     elif task == "lines":
         print(show_lines.remote(paths, start, end))

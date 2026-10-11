@@ -86,6 +86,7 @@ T4 = J("track4/laya.json")
 T4M = J("track4/multilingual.json")
 STEER = J("followups/steering.json")
 LLM = J("followups/llm_steps.json")
+JBA = J("phase9/jb_audit_rescore.json")
 SAE = J("sae/summary.json")
 HELD3 = J("followups/heldout_track3.json")
 P8 = {m: J(f"phase8/eval_{m}.json") for m in ("laya", "typed", "multilingual")}
@@ -607,12 +608,18 @@ head layers. This parallels the early-decodable, late-decisive pattern Wen et al
 decoder LLMs. Unlike their late layer, which tracks intent and resists obfuscation, laya's decision is sensitive to surface style (next items).</li>
 <li>Adding the jailbreak direction at the layer-{best['layer']} [MASK]s raises benign prompts flagged from
 {pct(STEER['base']['benign_flagged'])} to {pct(best['benign_flagged'])} with an unrelated question at {pct(best['urgency_flagged'])}.</li>
-<li>After gpt-5.6-terra removed only the override from {LLM['counterfactuals']['n']} flagged jailbreaks, laya still flags
-{pct(LLM['counterfactuals']['edited_flagged'])}: it reacts to jailbreak style more than to the instruction (edits not hand-checked).</li>
+<li>Override removal (exploratory, revised after audit): gpt-5.6-terra was asked to remove only the override from
+{LLM['counterfactuals']['n']} flagged jailbreaks, and laya still flagged {pct(LLM['counterfactuals']['edited_flagged'])} of the edits. An audit
+of 60 random edits found that only {JBA['groups']['clean_only_override_removed']['n']} removed just the override; most also cut
+the persona and setup, and {JBA['groups']['override_remains']['n']} kept the override. On the
+{JBA['groups']['clean_only_override_removed']['n']} clean edits laya still flags
+{JBA['groups']['clean_only_override_removed']['n_edited_flagged']} ({pct(JBA['groups']['clean_only_override_removed']['edited_flagged'])},
+95% CI 60–92%). What remains in them is role-play framing or a harmful request, so laya responds to these rather than to the
+override itself; with 21 items this is supporting evidence only, and the style test below is the cleaner test.</li>
 <li>Style test: the same 150 harmless requests are flagged {pct(STYLE['jailbreak']['flag_rate_plain'], 1)} written plainly and
 {pct(STYLE['jailbreak']['flag_rate_styled'], 1)} written in jailbreak style (persona/role-play, no override); for the injection question
-{pct(STYLE['injection']['flag_rate_plain'], 1)} vs {pct(STYLE['injection']['flag_rate_styled'], 1)}. The pairs are GPT-written and await a
-human audit.</li>
+{pct(STYLE['injection']['flag_rate_plain'], 1)} vs {pct(STYLE['injection']['flag_rate_styled'], 1)}. The pairs are GPT-written; the audit found
+141/150 make the same request (the rest add "show your steps") and none contains an override.</li>
 <li>Hindi (laya-multilingual): projecting out the English-fit direction drops detection of translated jailbreaks from
 {pct(T4M['ablate_hindi_jailbreaks']['before'])} to {pct(T4M['ablate_hindi_jailbreaks']['after'], 1)}.</li>
 </ul>""")
@@ -641,15 +648,19 @@ sections.append("""<h2>8 · Limitations and corrections</h2><ul>
 C1 and C2 describe how it handles options, not tuned QA behaviour.</li>
 <li>Order-invariance is guaranteed by construction in the shared-position cells; positions alone could not be tested.</li>
 <li>The extended guard was designed on earlier sets and has passed one confirmatory test (the frozen benchmark); contradicting
-passages and jailbreak rewrites were checked by a second model, not by hand; SAE feature labels were contaminated and are not used.</li>
-<li>Human audits of the GPT-written items, contradicting edits, jailbreak rewrites and style pairs are prepared
-(<code>audit/</code>) but not yet done.</li>
+passages and jailbreak rewrites were checked by a second GPT model and a Claude audit (next item), not yet by hand; SAE feature labels were contaminated and are not used.</li>
+<li>Audit of GPT-made data (random samples, judged by Claude, a model independent of the GPT generators; human review of
+the flagged rows is pending): contradicting edits on the frozen benchmark flip the answer in 56/60 (93%, 95% CI 84–97%); BoolQ
+edits 57/60 (95%); GPT-written C3 items have a correct gold label in 60/60 and are fully determined by the passage in 57/60; style
+pairs make the same request in 141/150 (the 9 others add "show your steps") and none contains an override; jailbreak
+rewrites removed the override in 53/60 but removed only the override in 21/60 (35%, 95% CI 24–48%).</li>
 <li>The all-layer guard's pre-registered prediction failed on retrained models (3 of 6 seeds ≤ 10%); RoBERTa has 3 seeds per arm,
 so its comparison cannot reach p &lt; 0.10.</li>
 <li>Withdrawn or corrected during the study: the early-timing account of label reading; "a confidence regulator" (now amplifier);
 a single-seed "20% less competition" (now a non-significant trend); "steering works only late"; "label-following comes from
 training data" (now: which training can create it); "same behaviour, different mechanisms" (now: the same edge classes in different
-layers, partly entangled with normal answering in some seeds); "a redundant label is not used" (wrong: 4 of 6 seeds use it); the planned "position vs token order" test (an identity by construction, not evidence).</li>
+layers, partly entangled with normal answering in some seeds); "a redundant label is not used" (wrong: 4 of 6 seeds use it); "laya flags 82% after only
+the override is removed" (the edits removed more than the override; 81% on 21 audited clean edits, exploratory); the planned "position vs token order" test (an identity by construction, not evidence).</li>
 </ul>""")
 
 sections.append(f"""<h2>9 · Reproduction and cost</h2>

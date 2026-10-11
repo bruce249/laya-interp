@@ -1,0 +1,38 @@
+{
+ "n_all": 145,
+ "all_orig_flagged": 1.0,
+ "all_edited_flagged": 0.8206896551724138,
+ "matched": 60,
+ "groups": {
+  "audited_all": {
+   "n": 60,
+   "orig_flagged": 1.0,
+   "edited_flagged": 0.8833333333333333,
+   "n_edited_flagged": 53
+  },
+  "override_removed": {
+   "n": 53,
+   "orig_flagged": 1.0,
+   "edited_flagged": 0.8679245283018868,
+   "n_edited_flagged": 46
+  },
+  "clean_only_override_removed": {
+   "n": 21,
+   "orig_flagged": 1.0,
+   "edited_flagged": 0.8095238095238095,
+   "n_edited_flagged": 17
+  },
+  "override_removed_but_more_cut": {
+   "n": 32,
+   "orig_flagged": 1.0,
+   "edited_flagged": 0.90625,
+   "n_edited_flagged": 29
+  },
+  "override_remains": {
+   "n": 7,
+   "orig_flagged": 1.0,
+   "edited_flagged": 1.0,
+   "n_edited_flagged": 7
+  }
+ }
+}

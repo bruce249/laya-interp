@@ -411,3 +411,20 @@ Shuffled noul option order in every arm; same data, loss (RLCD), init and budget
   - All 6 runs learned (BoolQ 0.773–0.820).
   - Label-following: planted 97.8, 82.3, 92.4% vs baseline 66.8, 4.6, 6.7%. Every planted run exceeds every baseline run (exact p = 0.10, the minimum for 3 vs 3).
   - All-layer block on planted runs: 6.0, 2.8, 37.6%, so 2 of 3 are ≤ 10%. **Prediction partly met.**
+
+**Audit of GPT-made data (2026-10-11).** Claude judged random samples; it is independent of the GPT generators, and this is not a human audit. Filled copies are in `audit/claude_filled/` (git-ignored), with flagged rows marked for human review.
+
+| Sheet | Result |
+|---|---|
+| Benchmark contradicting edits | Flip the answer 56/60; minimal 58/60 |
+| BoolQ edits | Flip 57/60; minimal 59/60 |
+| GPT C3 items | Gold correct 60/60; answer determined by the passage 57/60 |
+| Style pairs | Same request 141/150; no override 150/150 |
+| Jailbreak rewrites | Override removed 53/60; *only* the override removed 21/60 |
+
+- **Consequence for C4.** The headline "laya flags 82% after only the override is removed" is withdrawn.
+- **Rescore of the same 145 rewrites** (`release/results/phase9/jb_audit_rescore.json`; reproduces 82.1% overall):
+  - **Clean edits (override removed, nothing else changed):** 17/21 flagged (81%, Wilson 95% CI 60–92%).
+  - **Edits that also cut the persona or setup:** 29/32 flagged.
+  - **Edits that kept the override:** 7/7 flagged.
+- **Reading.** Laya responds to the residual role-play framing or harmful request, not to the override instruction itself. This is exploratory; the style test remains the clean test.
